@@ -9,6 +9,8 @@ export interface Role {
   id: number;
   name: string;
   description: string;
+  hierarchy: number;
+  status: string;
   permissions: Permission[];
 }
 
