@@ -1,11 +1,13 @@
 import { useState, useCallback } from 'react';
 import api from '../services/api';
 import type  { Role, CreateRoleDTO, UpdateRoleDTO } from '../types/roles';
+import { toast } from 'react-toastify';
 
 export const useRoles = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
 
   const getRoles = useCallback(async (includePermissions = true) => {
     setLoading(true);
@@ -52,7 +54,12 @@ export const useRoles = () => {
         await getRoles(); // Refresh the list
         return response.data.data;
       } else {
+        toast(response.data.message || 'Failed to create role', {
+            type: 'error',
+           })
+           setError(response.data.message || 'Failed to create role');
          throw new Error(response.data.message || 'Failed to create role');
+         
       }
     } catch (err: any) {
       console.error('Error creating role:', err);

@@ -1,3 +1,6 @@
+import { Button } from "./Button";
+import { X } from "lucide-react";
+
 interface DialogProps {
     children: React.ReactNode;
     open: boolean;
@@ -22,13 +25,15 @@ export const Dialog = ({
                 onClick={onClose}
             />
             <div className={`relative bg-white p-6 rounded-lg shadow-xl w-full transition-all ${className}`}>
-                {children}
-                <button
+                <Button
                     onClick={onClose}
-                    className="mt-4 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                    className="mt-4 absolute top-4 right-4"
+                    variant="ghost"
                 >
-                    Close
-                </button>
+                    <X />
+                </Button>
+                {children}
+
             </div>
         </div>
     )

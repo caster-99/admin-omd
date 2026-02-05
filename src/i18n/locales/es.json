@@ -140,6 +140,8 @@
   "createAudit":"Crear Auditoría",
   "editAudit":"Editar Auditoría",
   "deleteAudit":"Eliminar Auditoría",
+  "confirmDeleteRole":"¿Estás seguro de que quieres eliminar este rol?",
+  "noRolesFound":"No se encontraron roles.",
    "roles_data": {
       "super_admin": { "name": "Super Administrador", "hierarchy": "Super Admin" },
       "admin": { "name": "Administrador", "hierarchy": "Admin" },

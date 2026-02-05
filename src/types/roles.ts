@@ -17,7 +17,7 @@ export interface Role {
 export interface CreateRoleDTO {
   name: string;
   description: string;
-  permissions: string[]; // Array of permission IDs
+  permissions: number[]; // Array of permission IDs
 }
 
 export interface UpdateRoleDTO {

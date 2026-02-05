@@ -140,6 +140,8 @@
     "createAudit": "Create Audit",
     "editAudit": "Edit Audit",
     "deleteAudit": "Delete Audit",
+    "confirmDeleteRole": "Are you sure you want to delete this role?",
+    "noRolesFound": "No roles found.",
     "roles_data": {
       "super_admin": { "name": "Super Administrator", "hierarchy": "Super Admin" },
       "admin": { "name": "Administrator", "hierarchy": "Admin" },
