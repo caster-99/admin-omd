@@ -1,7 +1,7 @@
 import { Button } from "./Button";
 
 interface TableProps {
-    title: string;
+    title?: string;
     subtitle?: string;
     headers: string[];
     children: React.ReactNode;
@@ -12,7 +12,7 @@ export const Table = ({ title, subtitle, headers, children }: TableProps) => {
     // console.log(rows)
     return (
         <div className="flex flex-col gap-4 p-6 bg-secondary rounded-lg text-left">
-            <h3 className="text-lg font-semibold">{title}</h3>
+            {title && <h3 className="text-lg font-semibold">{title}</h3>}
             {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
             <table className="w-full">
                 <thead className="hidden md:table-header-group">

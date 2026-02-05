@@ -26,7 +26,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                 <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
                 <main
-                    className={`py-2 px-6 lg:px-20 grid gap-6 md:grid-cols-3 transition-all duration-300 ease-in-out`}
+                    className={`py-2 px-6 lg:px-20`}
                 >
                     {children}
                 </main>

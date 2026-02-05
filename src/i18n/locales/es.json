@@ -13,7 +13,30 @@
     "filter": "Filtrar",
     "logout": "Cerrar sesión",
     "menu": "Menú",
-    "language": "Idioma"
+    "language": "Idioma",
+    "labels": {
+      "name": "Nombre",
+      "description": "Descripción",
+      "status_active": "Activo",
+      "status_inactive": "Inactivo",
+      "hierarchy": "Jerarquía",
+      "created": "Creado",
+      "manage_permissions": "Gestionar Permisos",
+      "actions": "Acciones",
+      "state": "Estado",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "create": "Crear",
+      "search": "Buscar",
+      "filter": "Filtrar",
+      "logout": "Cerrar sesión",
+      "menu": "Menú",
+      "language": "Idioma",
+      "view": "Ver",
+      "email": "Email",
+      "role": "Role",
+      "changeStatus": "Cambiar Estado"
+    }
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -39,7 +62,8 @@
     "registerTitle": "Crear Cuenta",
     "registerSubtitle": "Regístrate para comenzar",
     "authorizedPersonnelOnly": "Solo personal autorizado",
-    "allRightsReserved": "Todos los derechos reservados"
+    "allRightsReserved": "Todos los derechos reservados",
+    "logout": "Cerrar sesión"
   },
   "home": {
     "welcome": "Bienvenido de nuevo",
@@ -60,100 +84,111 @@
   },
   "sidebar": {
     "dashboard": "Portal Principal",
-   "users":"Usuarios",
+    "users": "Usuarios",
+    "rolesAndPermissions": "Roles y Permisos",
+    "coupons": "Cupones",
+    "generalConfig": "Configuración General",
+    "poolUSDT": "PoolUSDT",
+    "investments": "Inversiones",
+    "transactions": "Transacciones",
+    "wallets": "Billeteras",
+    "audits": "Auditorías Generales",
+    "settings": "Configuración",
+    "poolOMDB": "PoolOMDB",
+    "conversion": "Tasa de Conversión",
+    "investmentMode": "Modo de Inversión",
+    "omd3": "OMD3",
+    "poolClosure": "Cierre de Pool",
+    "staking": "Staking",
+    "omdWallet": "OMD Wallet",
+    "airdrops": "Airdrops",
+    "tokens": "Tokens",
+    "claims": "Claims",
+    "referralSettings": "Configuración de Referidos",
+    "promotions": "Promociones",
+    "stats": "Estadísticas",
+    "elementMiners": "Element Miners",
+    "levels": "Niveles",
+    "socialTasks": "Tareas Sociales",
+    "emailMarketing": "Email Marketing",
+    "campaigns": "Campañas",
+    "configSMTP": "Configuración SMTP",
+    "support": "Soporte",
+    "reports": "Informes",
+    "pendingCases": "Casos Pendientes"
+  },
+  "users": {
+    "title": "Gestión Usuarios",
+    "subtitle": "Administra usuarios y sus roles",
+    "users": "Usuarios",
+    "noUsersFound": "No se encontraron usuarios."
+  },
+  "tabs": {
     "roles": "Roles",
-   "coupons": "Cupones",
-   "generalConfig": "Configuración General",
-   "poolUSDT":"PoolUSDT",
-   "investments":"Inversiones",
-   "transactions":"Transacciones",
-   "wallets":"Billeteras",
-   "audits":"Auditorías Generales",
-   "settings":"Configuración",
-   "poolOMDB":"PoolOMDB",
-   "conversion": "Tasa de Conversión",
-   "investmentMode": "Modo de Inversión",
-   "omd3": "OMD3",
-   "poolClosure": "Cierre de Pool",
-   "staking": "Staking",
-   "omdWallet": "OMD Wallet",
-   "airdrops": "Airdrops",
-   "tokens": "Tokens",
-   "claims":"Claims",
-   "referralSettings":"Configuración de Referidos",
-   "promotions":"Promociones",
-   "stats":"Estadísticas",
-   "elementMiners":"Element Miners",
-   "levels":"Niveles",
-   "socialTasks":"Tareas Sociales",
-   "emailMarketing":"Email Marketing",
-   "campaigns":"Campañas",
-   "configSMTP":"Configuración SMTP",
-   "support":"Soporte",
-   "reports":"Informes",
-   "pendingCases":"Casos Pendientes"},
-
-   "users":{
-    "title":"Gestión de Roles y Permisos",
-    "subtitle":"Administra roles, permisos y accesos del sistema",
-    "roles":"Roles",
-    "users":"Usuarios",
-    "permissions":"Permisos",
-    "audit":"Auditoría",
-    "labels": {
-      "name": "Nombre",
-      "description": "Descripción",
-      "status_active": "Activo",
-      "status_inactive": "Inactivo",
-      "hierarchy": "Jerarquía",
-      "created": "Creado",
-      "manage_permissions": "Gestionar Permisos",
-      "actions":"Acciones",
-      "state":"Estado",
-      "edit":"Editar",
-      "delete":"Eliminar",
-      "create":"Crear",
-      "search":"Buscar",
-      "filter":"Filtrar",
-      "logout":"Cerrar sesión",
-      "menu":"Menú",
-      "language":"Idioma",
-      "view":"Ver"
-    },
-  "roleManagement":"Gestión de Roles",
-  "rolesList":"Lista de todos los roles disponibles en el sistema",
-  "createRole":"Crear Rol",
-  "editRole":"Editar Rol",
-  "deleteRole":"Eliminar Rol",
-  "permissionManagement":"Gestión de Permisos",
-  "permissionManagementSubtitle":"Permisos del Sistema",
-  "createPermission":"Crear Permiso",
-  "editPermission":"Editar Permiso",
-  "deletePermission":"Eliminar Permiso",
-  "userManagement":"Gestión de Usuarios",
-  "userManagementSubtitle":"Usuarios del Sistema",
-  "createUser":"Crear Usuario",
-  "editUser":"Editar Usuario",
-  "deleteUser":"Eliminar Usuario",
-  "auditManagement":"Gestión de Auditorías",
-  "auditManagementSubtitle":"Auditorías del Sistema",
-  "createAudit":"Crear Auditoría",
-  "editAudit":"Editar Auditoría",
-  "deleteAudit":"Eliminar Auditoría",
-  "confirmDeleteRole":"¿Estás seguro de que quieres eliminar este rol?",
-  "noRolesFound":"No se encontraron roles.",
-   "roles_data": {
-      "super_admin": { "name": "Super Administrador", "hierarchy": "Super Admin" },
-      "admin": { "name": "Administrador", "hierarchy": "Admin" },
-      "coupon_manager": { "name": "Gestor de Cupones", "hierarchy": "Manager" },
-      "ai_manager": { "name": "Gestor de IA", "hierarchy": "Manager" },
-      "investment_manager": { "name": "Gestor de Inversiones", "hierarchy": "Manager" },
-      "staking_manager": { "name": "Gestor de Staking", "hierarchy": "Manager" },
-      "user_manager": { "name": "Gestor de Usuarios", "hierarchy": "Manager" },
-      "wallet_manager": { "name": "Gestor de Wallets", "hierarchy": "Manager" },
-      "auditor": { "name": "Auditor", "hierarchy": "Support" },
-      "support": { "name": "Soporte", "hierarchy": "Support" }
+    "permissions": "Permisos",
+    "audit": "Auditoría"
+  },
+  "roles": {
+    "title": "Gestión de Roles",
+    "subtitle": "Administra roles y permisos",
+    "rolesList": "Lista de todos los roles disponibles en el sistema",
+    "confirmDeleteRole": "¿Estás seguro de que quieres eliminar este rol?",
+    "noRolesFound": "No se encontraron roles.",
+    "roles_data": {
+      "super_admin": {
+        "name": "Super Administrador",
+        "hierarchy": "Super Admin"
+      },
+      "admin": {
+        "name": "Administrador",
+        "hierarchy": "Admin"
+      },
+      "coupon_manager": {
+        "name": "Gestor de Cupones",
+        "hierarchy": "Manager"
+      },
+      "ai_manager": {
+        "name": "Gestor de IA",
+        "hierarchy": "Manager"
+      },
+      "investment_manager": {
+        "name": "Gestor de Inversiones",
+        "hierarchy": "Manager"
+      },
+      "staking_manager": {
+        "name": "Gestor de Staking",
+        "hierarchy": "Manager"
+      },
+      "user_manager": {
+        "name": "Gestor de Usuarios",
+        "hierarchy": "Manager"
+      },
+      "wallet_manager": {
+        "name": "Gestor de Wallets",
+        "hierarchy": "Manager"
+      },
+      "auditor": {
+        "name": "Auditor",
+        "hierarchy": "Support"
+      },
+      "support": {
+        "name": "Soporte",
+        "hierarchy": "Support"
+      }
     }
-   }
+  },
+  "permissions": {
+    "title": "Gestión de Permisos",
+    "subtitle": "Permisos del Sistema",
+    "permissionManagement": "Gestión de Permisos",
+    "permissionManagementSubtitle": "Permisos del Sistema",
+    "noPermissionsFound": "No se encontraron permisos."
+  },
+  "audits": {
+    "title": "Gestión de Auditorías",
+    "subtitle": "Auditorías del Sistema",
+    "auditManagement": "Gestión de Auditorías",
+    "auditManagementSubtitle": "Auditorías del Sistema",
+    "noAuditsFound": "No se encontraron auditorías."
+  }
 }
-

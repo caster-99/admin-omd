@@ -4,6 +4,7 @@ import Register from '@/pages/Register'
 import Home from '@/pages/Principal/Home'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { Users } from '@/pages/Principal/Users'
+import { RolesAndPermissions } from './pages/Principal/RolesAndPermissions'
 
 function App() {
   return (
@@ -18,6 +19,10 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/users" element={<Users />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard/rolesAndPermissions" element={<RolesAndPermissions />} />
       </Route>
 
       {/* Catch all */}

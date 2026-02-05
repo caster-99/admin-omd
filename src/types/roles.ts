@@ -12,6 +12,7 @@ export interface Role {
   hierarchy: number;
   status: string;
   permissions: Permission[];
+  created_at: string;
 }
 
 export interface CreateRoleDTO {

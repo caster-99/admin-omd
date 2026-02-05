@@ -89,29 +89,29 @@ export const RoleForm = ({ onClose, roleToEdit }: RoleFormProps) => {
             <h2 className="text-xl font-bold">{roleToEdit ? t('users.editRole') : t('users.createRole')}</h2>
             <form className="flex flex-col gap-4 w-full" onSubmit={handleSubmit(onSubmit)}>
                 <LabelInput>
-                    <Label htmlFor="name">{t('users.labels.name')}</Label>
+                    <Label htmlFor="name">{t('common.labels.name')}</Label>
                     <Input
                         id="name"
                         type="text"
                         {...register("name")}
-                        placeholder={t('users.labels.name')}
+                        placeholder={t('common.labels.name')}
                     />
                     {errors.name && <span className="text-red-500 text-xs">{errors.name.message}</span>}
                 </LabelInput>
 
                 <LabelInput>
-                    <Label htmlFor="description">{t('users.labels.description')}</Label>
+                    <Label htmlFor="description">{t('common.labels.description')}</Label>
                     <TextArea
                         id="description"
                         {...register("description")}
-                        placeholder={t('users.labels.description')}
+                        placeholder={t('common.labels.description')}
                         rows={5}
                     />
                     {errors.description && <span className="text-red-500 text-xs">{errors.description.message}</span>}
                 </LabelInput>
 
                 <LabelInput>
-                    <Label htmlFor="hierarchy">{t('users.labels.hierarchy')}</Label>
+                    <Label htmlFor="hierarchy">{t('common.labels.hierarchy')}</Label>
                     <Select
                         id="hierarchy"
                         options={hierarchyOptions}
