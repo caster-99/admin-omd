@@ -20,6 +20,7 @@
       "status_active": "Active",
       "status_inactive": "Inactive",
       "hierarchy": "Hierarchy",
+      "classification": "Classification",
       "permissions": "Permissions",
       "created": "Created",
       "manage_permissions": "Manage Permissions",

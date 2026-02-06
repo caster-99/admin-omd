@@ -21,6 +21,7 @@
       "status_inactive": "Inactivo",
       "hierarchy": "Jerarquía",
       "permissions": "Permisos",
+      "classification": "Clasificación",
       "created": "Creado",
       "manage_permissions": "Gestionar Permisos",
       "actions": "Acciones",

@@ -1,9 +1,5 @@
-export interface Permission {
-  id: number;
-  name: string;
-  description: string;
-  classification: string;
-}
+import type { Permission } from './permissions';
+export type { Permission };
 
 export interface Role {
   id: number;
