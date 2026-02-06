@@ -39,7 +39,8 @@
       "role": "Role",
       "changeStatus": "Change Status",
       "balance": "Balance",
-      "allRoles": "All Roles"
+      "allRoles": "All Roles",
+      "assign": "Assign role"
     },
     "placeholders": {
       "searchByName": "Search by name...",
@@ -138,7 +139,8 @@
     "subtitle": "Manage users and their roles",
     "users": "Users",
     "noUsersFound": "No users found.",
-    "createUser": "Create User"
+    "createUser": "Create User",
+    "viewUser": "View User"
   },
   "tabs": {
     "roles": "Roles",

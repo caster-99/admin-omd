@@ -5,14 +5,14 @@ export interface User {
     email: string;
     username: string;
     name: string;
-    lastname: string;
-    phone: string;
-    balance: number;
-    password: string;
-    roles: Pick<Role, 'id' | 'name'>[]; // only id and name
+    lastname: string; 
+    balance: string | number;
+    password?: string; // Optional as it might not always be returned
+    roles:  Pick<Role, 'id' | 'name'>[]; 
     status: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
+    roleDetails: Role[];
 }
 export interface UserFilters {
     includeRoles?: boolean;

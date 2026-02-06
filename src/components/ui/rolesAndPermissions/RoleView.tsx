@@ -1,26 +1,6 @@
-import { useRoles } from "@/hooks/useRoles";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "../Button";
-import { Input } from "../Input";
-import { Select } from "../Select";
-import { TextArea } from "../TextArea";
-import { Label } from "../Label";
-import { LabelInput } from "../LabelInput";
-import { toast } from "react-toastify";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import type { Role } from "@/types/roles";
-import { usePermissions } from "@/hooks/usePermissions";
 
-const schema = yup.object().shape({
-    name: yup.string().required('Name is required'),
-    description: yup.string().required('Description is required'),
-    hierarchy_level: yup.number().required('Hierarchy is required'),
-});
-
-type FormData = yup.InferType<typeof schema>;
 
 interface RoleFormProps {
     onClose: () => void;
