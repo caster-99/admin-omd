@@ -20,6 +20,8 @@
       "status_active": "Activo",
       "status_inactive": "Inactivo",
       "hierarchy": "Jerarquía",
+      "permissions": "Permisos",
+      "classification": "Clasificación",
       "created": "Creado",
       "manage_permissions": "Gestionar Permisos",
       "actions": "Acciones",
@@ -34,10 +36,17 @@
       "language": "Idioma",
       "view": "Ver",
       "email": "Email",
-      "role": "Role",
+      "role": "Rol",
       "changeStatus": "Cambiar Estado",
       "balance": "Saldo",
-      "allRoles": "Todos los Roles"
+      "allRoles": "Todos los Roles",
+      "assign": "Asignar Rol",
+      "username": "Nombre de usuario",
+      "createdAt": "Fecha de creación",
+      "updatedAt": "Fecha de actualización",
+      "roles": "Roles",
+      "status": "Estado",
+      "user": "Usuario"
     },
     "placeholders": {
       "searchByName": "Buscar por nombre...",
@@ -136,7 +145,8 @@
     "subtitle": "Administra usuarios y sus roles",
     "users": "Usuarios",
     "noUsersFound": "No se encontraron usuarios.",
-    "createUser": "Crear Usuario"
+    "createUser": "Crear Usuario",
+    "viewUser": "Ver Usuario"
   },
   "tabs": {
     "roles": "Roles",
@@ -149,6 +159,8 @@
     "rolesList": "Lista de todos los roles disponibles en el sistema",
     "confirmDeleteRole": "¿Estás seguro de que quieres eliminar este rol?",
     "noRolesFound": "No se encontraron roles.",
+    "editRole": "Gestionar Permisos",
+    "permissions": "Permisos",
     "roles_data": {
       "super_admin": {
         "name": "Super Administrador",

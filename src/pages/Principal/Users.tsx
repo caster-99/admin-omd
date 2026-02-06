@@ -12,46 +12,60 @@ import { Chip } from "@/components/ui/Chip";
 import { ButtonGroup } from "@/components/ui/ButtonGroup";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Pagination } from "@/components/ui/Pagination";
+import { Dialog } from "@/components/ui/Dialog";
+import { UserView } from "@/components/ui/users/UserView";
+import { AssignRolesForm } from "@/components/ui/users/AssignRolesForm";
 
 
 
 export const Users = () => {
     const { t } = useTranslation();
-    const { users, getUsers, loading, error, pagination } = useUsers();
+    const { users, getUsers, loading, error, pagination, getUser } = useUsers();
 
     const { getRoles, roles } = useRoles();
     const [openDialog, setOpenDialog] = useState(false);
-    const [userToEdit, setUserToEdit] = useState<User | null>(null);
-    const PAGE_LIMIT = 5;
-    const [filters, setFilters] = useState({
-        name: '',
-        balance: '',
-        role: '',
-        includeRoles: true,
-        includePermissions: true,
-        page: 1,
-        limit: PAGE_LIMIT
-    });
+    const [openAssignRolesDialog, setOpenAssignRolesDialog] = useState(false);
+    const [userToView, setUserToView] = useState<number | null>(null);
+    const [userToAssignRoles, setUserToAssignRoles] = useState<number | null>(null);
 
-    const updateFilter = (filter: string, value: any) => {
-        setFilters(prev => ({ ...prev, [filter]: value, page: 1 }));
-    };
+    /**
+     * Individual filters
+     */
+    const [balanceFilter, setBalanceFilter] = useState('');
+    const [roleFilter, setRoleFilter] = useState('');
+
+    /*
+    * Pagination
+    */
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const PAGE_LIMIT = 5;
+
+
+
 
     useEffect(() => {
-        getUsers(filters);
-    }, [getUsers, filters]);
+        getUsers({
+            includeRoles: false,
+            page: currentPage,
+            limit: PAGE_LIMIT,
+            balance: balanceFilter,
+            role: roleFilter
+        });
+    }, [getUsers, currentPage, balanceFilter, roleFilter]);
 
     useEffect(() => {
         getRoles();
     }, [getRoles]);
 
-    const handleOpenCreate = () => {
-        setUserToEdit(null);
-        setOpenDialog(true);
+    const handleAssignRoles = (userId: number) => {
+        setUserToAssignRoles(userId);
+        setOpenAssignRolesDialog(true);
     };
 
-    const handleEdit = (user: User) => {
-        setUserToEdit(user);
+    const handleView = (user: User) => {
+        setUserToView(user.id);
         setOpenDialog(true);
     };
 
@@ -63,35 +77,32 @@ export const Users = () => {
                         <h1 className="text-2xl font-bold">{t('users.title')}</h1>
                         <p className="text-muted-foreground">{t('users.subtitle')}</p>
                     </div>
-                    <Button className="flex gap-2 py-4 px-6" onClick={handleOpenCreate}>
-                        <Plus size={20} />
-                        {t('users.createUser')}
-                    </Button>
+
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-card p-4 rounded-lg border">
-                    <div className="flex flex-col gap-1">
+                    {/* <div className="flex flex-col gap-1">
                         <label className="text-sm font-medium">{t('common.labels.name')}</label>
                         <Input
                             placeholder={t('common.placeholders.searchByName')}
                             value={filters.name}
                             onChange={(e) => updateFilter('name', e.target.value)}
                         />
-                    </div>
+                    </div> */}
                     <div className="flex flex-col gap-1">
                         <label className="text-sm font-medium">{t('common.labels.balance')}</label>
                         <Input
                             type="number"
                             placeholder={t('common.placeholders.balance')}
-                            value={filters.balance}
-                            onChange={(e) => updateFilter('balance', e.target.value)}
+                            value={balanceFilter}
+                            onChange={(e) => setBalanceFilter(e.target.value)}
                         />
                     </div>
                     <div className="flex flex-col gap-1">
                         <label className="text-sm font-medium">{t('common.labels.role')}</label>
                         <Select
-                            value={filters.role}
-                            onChange={(e) => updateFilter('role', e.target.value)}
+                            value={roleFilter}
+                            onChange={(e) => setRoleFilter(e.target.value)}
                             options={[
                                 { value: '', label: t('common.labels.allRoles') },
                                 ...roles.map(r => ({ value: r.id.toString(), label: r.name }))
@@ -102,15 +113,11 @@ export const Users = () => {
                         <Button
                             variant="outline"
                             className="w-full"
-                            onClick={() => setFilters({
-                                name: '',
-                                balance: '',
-                                role: '',
-                                includeRoles: true,
-                                includePermissions: true,
-                                page: 1,
-                                limit: PAGE_LIMIT
-                            })}
+                            onClick={() => {
+                                setBalanceFilter('');
+                                setRoleFilter('');
+                                setCurrentPage(1);
+                            }}
                         >
                             {t('common.actions.clearFilters')}
                         </Button>
@@ -122,13 +129,13 @@ export const Users = () => {
                         <p>{t('common.loading')}</p>
                     ) : users && users.length > 0 ? (
                         <Table
-                            headers={[t('common.labels.name'), t('common.labels.email'), t('common.labels.role'), t('common.labels.state'), t('common.labels.actions')]}
+                            headers={[t('common.labels.name'), t('common.labels.email'), t('common.labels.state'), t('common.labels.actions')]}
                         >
                             {users.map((user: User) => (
                                 <tr key={user.id} className="block md:table-row bg-card mb-4 rounded-lg shadow-sm border p-4 md:p-0 md:mb-0 md:shadow-none md:border-b md:border-border md:bg-transparent">
                                     <td className="flex justify-between items-center md:table-cell py-2 md:py-4 md:px-4 border-b md:border-0 last:border-0">
                                         <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.name')}</span>
-                                        {user.name}
+                                        {user.name} {user.lastname}
                                     </td>
 
                                     <td className="flex justify-between items-center md:table-cell py-2 md:py-4 md:px-4 border-b md:border-0 last:border-0">
@@ -136,10 +143,6 @@ export const Users = () => {
                                         {user.email}
                                     </td>
 
-                                    <td className="flex justify-between items-center md:table-cell py-2 md:py-4 md:px-4 border-b md:border-0 last:border-0">
-                                        <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.role')}</span>
-                                        {user.roles.map((role: any) => role.name).join(', ')}
-                                    </td>
 
                                     <td className="flex justify-between items-center md:table-cell py-2 md:py-4 md:px-4 border-b md:border-0 last:border-0">
                                         <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.state')}</span>
@@ -150,7 +153,10 @@ export const Users = () => {
                                         <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.actions')}</span>
                                         <div className="flex gap-2">
                                             <ButtonGroup>
-                                                <Button variant="ghost" className="justify-start" onClick={() => handleEdit(user)}>{t('common.labels.edit')}</Button>
+                                                <Button variant="ghost" className="justify-start" onClick={() => handleView(user)}>{t('common.labels.view')}</Button>
+                                                <Button variant="ghost" className="flex gap-2 py-4 px-6" onClick={() => handleAssignRoles(user.id)}>
+                                                    {t('common.labels.assign')}
+                                                </Button>
                                             </ButtonGroup>
                                         </div>
                                     </td>
@@ -158,34 +164,24 @@ export const Users = () => {
                             ))}
                         </Table>
                     ) : (
-                        <p className="text-center py-8 text-muted-foreground">{error || t('users.noRolesFound')}</p>
+                        <p className="text-center py-8 text-muted-foreground">{error || t('users.noUsersFound')}</p>
                     )}
 
-                    <div className="flex justify-between items-center mt-4">
-                        <p className="text-sm text-muted-foreground">
-                            {t('common.pagination.page')} {filters.page} {pagination?.pages ? `of ${pagination.pages}` : ''}
-                        </p>
-                        <div className="flex gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={filters.page === 1}
-                                onClick={() => updateFilter('page', filters.page - 1)}
-                            >
-                                {t('common.pagination.previous')}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={pagination?.pages ? filters.page >= pagination.pages : false}
-                                onClick={() => updateFilter('page', filters.page + 1)}
-                            >
-                                {t('common.pagination.next')}
-                            </Button>
-                        </div>
-                    </div>
+                    <Pagination
+                        currentPage={currentPage}
+                        pagination={pagination}
+                        setCurrentPage={setCurrentPage}
+                    />
                 </div>
+                <Dialog open={openDialog} onClose={() => setOpenDialog(false)} >
 
+                    <UserView userToView={userToView} />
+
+                </Dialog>
+
+                <Dialog open={openAssignRolesDialog} onClose={() => setOpenAssignRolesDialog(false)} >
+                    <AssignRolesForm userId={userToAssignRoles!} onClose={() => setOpenAssignRolesDialog(false)} />
+                </Dialog>
 
             </div>
         </Layout>
