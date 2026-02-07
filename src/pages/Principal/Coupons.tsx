@@ -37,7 +37,8 @@ export const Coupons = () => {
     const [expires_before, setExpiresBefore] = useState<string | undefined>(undefined);
     const [created_after, setCreatedAfter] = useState<string | undefined>(undefined);
     const [created_before, setCreatedBefore] = useState<string | undefined>(undefined);
-
+    const [returnable, setReturnable] = useState<boolean | undefined>(undefined);
+    const [pool, setPool] = useState<string>('');
     const [appliedFilters, setAppliedFilters] = useState<any>({});
 
     useEffect(() => {
@@ -63,6 +64,8 @@ export const Coupons = () => {
             expires_before: expires_before ? new Date(expires_before) : undefined,
             created_after: created_after ? new Date(created_after) : undefined,
             created_before: created_before ? new Date(created_before) : undefined,
+            returnable,
+            pool,
         };
         setAppliedFilters(filters);
         setCurrentPage(1);
@@ -95,6 +98,8 @@ export const Coupons = () => {
         setExpiresBefore(undefined);
         setCreatedAfter(undefined);
         setCreatedBefore(undefined);
+        setPool('');
+        setReturnable(undefined);
         setAppliedFilters({});
     }
 
@@ -120,6 +125,12 @@ export const Coupons = () => {
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                 />
+                <Input
+                    type="text"
+                    placeholder={t('coupons.filters.pool')}
+                    value={pool}
+                    onChange={(e) => setPool(e.target.value)}
+                />
                 <Select
                     value={is_redeemed === undefined ? '' : is_redeemed.toString()}
                     options={[
@@ -135,7 +146,15 @@ export const Coupons = () => {
                     value={redeemed_by || ''}
                     onChange={(e) => setRedeemedBy(e.target.value ? parseInt(e.target.value) : undefined)}
                 />
-
+                <Select
+                    value={returnable === undefined ? '' : returnable.toString()}
+                    options={[
+                        { value: '', label: t('coupons.filters.all') },
+                        { value: 'true', label: t('coupons.filters.returnable') },
+                        { value: 'false', label: t('coupons.filters.notReturnable') },
+                    ]}
+                    onChange={(e) => setReturnable(e.target.value === '' ? undefined : e.target.value === 'true')}
+                />
                 <Input
                     type="number"
                     placeholder={t('coupons.filters.minAmount')}
@@ -182,11 +201,12 @@ export const Coupons = () => {
             </div>
 
             {coupons && coupons.length > 0 ? (
-                <Table headers={[t('coupons.headers.code'), t('coupons.headers.amount'), t('coupons.headers.status'), t('coupons.headers.expiration_date'), t('coupons.headers.redeemed_by'), t('coupons.headers.with_return'), t('coupons.headers.creator'), t('common.labels.actions')]} >
+                <Table headers={[t('coupons.headers.code'), t('coupons.headers.amount'), t('coupons.headers.pool'), t('coupons.headers.status'), t('coupons.headers.expiration_date'), t('coupons.headers.redeemed_by'), t('coupons.headers.with_return'), t('coupons.headers.creator'), t('common.labels.actions')]} >
                     {coupons.map((coupon) => (
                         <tr key={coupon.id} className="block md:table-row bg-card mb-4 rounded-lg shadow-sm border p-4 md:p-0 md:mb-0 md:shadow-none md:border-b md:border-border md:bg-transparent">
                             <TableCell label={t('coupons.headers.code')}><CopyTextComponent textToCopy={coupon.code} /></TableCell>
                             <TableCell label={t('coupons.headers.amount')}>{coupon.amount}</TableCell>
+                            <TableCell label={t('coupons.headers.pool')}>{coupon.pool}</TableCell>
                             <TableCell label={t('coupons.headers.status')}>{coupon.status}</TableCell>
                             <TableCell label={t('coupons.headers.expiration_date')}>{new Date(coupon.expiration_date).toLocaleDateString()}</TableCell>
                             <TableCell label={t('coupons.headers.redeemed_by')}>{coupon.assigned_user?.username || 'N/A'}</TableCell>

@@ -21,7 +21,6 @@
       "description": "Description",
       "status_active": "Active",
       "status_inactive": "Inactive",
-      "hierarchy": "Hierarchy",
       "classification": "Classification",
       "permissions": "Permissions",
       "created": "Created",
@@ -241,7 +240,9 @@
       "redeemedBy": "Redeemed by",
       "redeemed": "Redeemed",
       "notRedeemed": "Not redeemed",
-      "creator": "Creator"
+      "creator": "Creator",
+      "pool": "Pool",
+      "returnable": "With return"
     },
     "headers": {
       "code": "Code",
@@ -250,7 +251,8 @@
       "expiration_date": "Expiration date",
       "redeemed_by": "Redeemed by",
       "with_return": "With return",
-      "creator": "Creator"
+      "creator": "Creator",
+      "pool": "Pool"
     }
   }
 }

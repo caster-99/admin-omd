@@ -147,13 +147,13 @@ export const Sidebar = ({
                                         <Button
                                             variant="ghost"
                                             className={`w-full justify-between hover:bg-muted ${isExpanded ? 'bg-muted' : ''}`}
-                                            onClick={() => toggleSubmenu(item.path)}
+
                                         >
                                             <div className="flex items-center gap-2">
                                                 {renderIcon(item.path)}
                                                 <span>{t(item.title)}</span>
                                             </div>
-                                            <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                                            <ChevronDown onClick={() => toggleSubmenu(item.path)} className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
                                         </Button>
                                     ) : (
                                         <NavLink

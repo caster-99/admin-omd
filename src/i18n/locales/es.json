@@ -246,7 +246,9 @@
       "redeemedBy": "Redimido por",
       "redeemed": "Redimido",
       "notRedeemed": "No redimido",
-      "creator": "Creador"
+      "creator": "Creador",
+      "pool": "Pool",
+      "returnable": "Con retorno"
     },
     "headers": {
       "code": "Código",
@@ -255,7 +257,8 @@
       "expiration_date": "Fecha de expiración",
       "redeemed_by": "Redimido por",
       "with_return": "Con retorno",
-      "creator": "Creador"
+      "creator": "Creador",
+      "pool": "Pool"
     }
   }
 }

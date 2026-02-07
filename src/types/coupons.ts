@@ -39,6 +39,8 @@ export interface CouponFilters {
     expires_before?: Date;
     created_after?: Date;
     created_before?: Date; 
+    pool?: string;
+    returnable?: boolean;
 }
 
 export interface CreateCouponDTO {

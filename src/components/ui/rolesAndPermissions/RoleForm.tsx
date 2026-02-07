@@ -17,7 +17,6 @@ import { usePermissions } from "@/hooks/usePermissions";
 const schema = yup.object().shape({
     name: yup.string().required('Name is required'),
     description: yup.string().required('Description is required'),
-    hierarchy_level: yup.number().required('Hierarchy is required'),
 });
 
 type FormData = yup.InferType<typeof schema>;
@@ -39,7 +38,6 @@ export const RoleForm = ({ onClose, onSuccess, roleToEdit }: RoleFormProps) => {
         defaultValues: {
             name: roleToEdit?.name || "",
             description: roleToEdit?.description || "",
-            hierarchy_level: roleToEdit?.hierarchy_level || 3,
         }
     });
 
@@ -52,23 +50,18 @@ export const RoleForm = ({ onClose, onSuccess, roleToEdit }: RoleFormProps) => {
             reset({
                 name: roleToEdit.name,
                 description: roleToEdit.description,
-                hierarchy_level: roleToEdit.hierarchy_level,
             });
             setSelectedPermissions(roleToEdit.permissions.map(p => p.id));
         } else {
             reset({
                 name: "",
                 description: "",
-                hierarchy_level: 3,
             });
             setSelectedPermissions([]);
         }
     }, [roleToEdit, reset]);
 
-    const hierarchyOptions = [
-        { value: '3', label: 'Manager (Nivel 3)' },
-        { value: '4', label: 'Support (Nivel 4)' },
-    ]
+
 
     const onSubmit = async (data: FormData) => {
         try {
@@ -76,7 +69,6 @@ export const RoleForm = ({ onClose, onSuccess, roleToEdit }: RoleFormProps) => {
                 await updateRole(roleToEdit.id, {
                     name: data.name,
                     description: data.description,
-                    hierarchy_level: data.hierarchy_level,
                     permissions: selectedPermissions,
                 });
                 toast.success(t('common.messages.updateSuccess'));
@@ -85,7 +77,6 @@ export const RoleForm = ({ onClose, onSuccess, roleToEdit }: RoleFormProps) => {
                 await createRole({
                     name: data.name,
                     description: data.description,
-                    hierarchy_level: data.hierarchy_level,
                     permissions: selectedPermissions
                 });
                 toast.success(t('common.messages.createSuccess'));
@@ -129,15 +120,7 @@ export const RoleForm = ({ onClose, onSuccess, roleToEdit }: RoleFormProps) => {
                 {errors.description && <span className="text-red-500 text-xs">{errors.description.message}</span>}
             </LabelInput>
 
-            <LabelInput>
-                <Label htmlFor="hierarchy_level">{t('common.labels.hierarchy_level')}</Label>
-                <Select
-                    id="hierarchy_level"
-                    options={hierarchyOptions}
-                    {...register("hierarchy_level")}
-                />
-                {errors.hierarchy_level && <span className="text-red-500 text-xs">{errors.hierarchy_level.message}</span>}
-            </LabelInput>
+
 
             <div className="flex flex-col gap-2 mt-4">
                 <Label>{t('roles.permissions')}</Label>
