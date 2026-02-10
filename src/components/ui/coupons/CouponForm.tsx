@@ -6,6 +6,7 @@ import { Button } from "../Button";
 import { generateCode } from "@/lib/utils";
 import { Input } from "../Input";
 import { Select } from "../Select";
+import { SearchableSelect } from "../SearchableSelect";
 
 interface CouponFormProps {
     coupon?: Coupon;
@@ -124,11 +125,17 @@ export const CouponForm = ({ coupon, onClose }: CouponFormProps) => {
                         onChange={(e) => setCurrency(e.target.value)} />
                 )}
                 {/* ToDo: add search select */}
-                <Select label={t('coupons.labels.user')}
-                    className="w-full"
-                    value={user}
-                    options={users.map((user) => ({ value: user.id, label: user.name }))}
-                    onChange={(e) => setUser(e.target.value)} />
+                <div className="flex flex-row gap-4 items-center w-full">
+                    <SearchableSelect
+                        label={t('coupons.labels.user')}
+                        className="w-full"
+                        // value={user}
+                        options={users.map((user) => ({ value: user.id, label: user.name }))}
+                    // onChange={(e) => setUser(e.target.value)}
+
+                    />
+
+                </div>
 
                 {pool === "poolUSDT" && (
                     <Select label={t('coupons.labels.promotion')}

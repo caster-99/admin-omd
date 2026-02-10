@@ -15,11 +15,14 @@ import { Select } from "@/components/ui/Select";
 import { Pagination } from "@/components/ui/Pagination";
 import { Plus } from "lucide-react";
 import { CouponForm } from "@/components/ui/coupons/CouponForm";
+import { CouponView } from "@/components/ui/coupons/CouponView";
 
 
 export const Coupons = () => {
     const { t } = useTranslation();
     const [open, setOpen] = useState(false)
+    const [openView, setOpenView] = useState(false);
+    const [couponView, setCouponView] = useState<Coupon | null>(null);
     const { coupons, getCoupons, loading, error, pagination } = useCoupons();
 
 
@@ -71,7 +74,8 @@ export const Coupons = () => {
     };
 
     const handleView = (coupon: Coupon) => {
-        console.log(coupon);
+        setCouponView(coupon);
+        setOpenView(true);
     }
 
     const handleEdit = (coupon: Coupon) => {
@@ -248,10 +252,16 @@ export const Coupons = () => {
                                 <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.actions')}</span>
                                 <div className="flex gap-2">
                                     <ButtonGroup >
+
                                         <Button variant="ghost" className="justify-start" onClick={() => { handleView(coupon) }}>{t('common.labels.view')}</Button>
-                                        <Button variant="ghost" className="justify-start" onClick={() => { handleEdit(coupon) }}>{t('common.labels.edit')}</Button>
-                                        <Button variant="ghost" className="justify-start w-full" onClick={() => handleChangeStatus(coupon.id, coupon.status === "active" ? "inactive" : "active")}>{t('common.labels.changeStatus')}</Button>
-                                        <Button variant="destructive" className="justify-start" onClick={() => handleDelete(coupon)}>{t('common.labels.delete')}</Button>
+                                        {!coupon.is_redeemed &&
+                                            <>
+                                                <Button variant="ghost" className="justify-start" onClick={() => { handleEdit(coupon) }}>{t('common.labels.edit')}</Button>
+                                                <Button variant="ghost" className="justify-start w-full" onClick={() => handleChangeStatus(coupon.id, coupon.status === "active" ? "inactive" : "active")}>{t('common.labels.changeStatus')}</Button>
+                                                <Button variant="destructive" className="justify-start" onClick={() => handleDelete(coupon)}>{t('common.labels.delete')}</Button>
+
+                                            </>}
+
                                     </ButtonGroup>
                                 </div>
                             </td>
@@ -273,9 +283,11 @@ export const Coupons = () => {
                     setCurrentPage={setCurrentPage}
                 />
             )}
-
-
-
+            {couponView && (
+                <Dialog open={openView} onClose={() => setOpenView(false)} >
+                    <CouponView id={couponView.id} onClose={() => setOpenView(false)} />
+                </Dialog>
+            )}
 
             <Dialog open={open} onClose={() => setOpen(false)} >
                 <CouponForm onClose={() => setOpen(false)} />

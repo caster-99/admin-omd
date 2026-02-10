@@ -4,6 +4,7 @@ import type  { Coupon, CouponFilters, CreateCouponDTO } from '../types/coupons';
 
 export const useCoupons = () => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<{ 
@@ -45,7 +46,7 @@ export const useCoupons = () => {
     try {
       const response = await api.get(`/coupons/${id}`);
       if (response.data.success) {
-        return response.data.data;
+        setCoupon(response.data.data);
       }
       return null;
     } catch (err: any) {
@@ -96,6 +97,7 @@ export const useCoupons = () => {
 
   return {
     coupons,
+    coupon,
     loading,
     error,
     getCoupons,
