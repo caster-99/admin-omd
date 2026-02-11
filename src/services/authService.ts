@@ -13,6 +13,7 @@ export interface LoginResponse {
     email: string;
     name?: string;
     roles?: Pick<Role, 'id'>[];
+    permissions?: string[];
   };
   message?: string;
 }

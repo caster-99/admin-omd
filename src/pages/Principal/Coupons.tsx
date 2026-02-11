@@ -16,6 +16,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { Plus } from "lucide-react";
 import { CouponForm } from "@/components/ui/coupons/CouponForm";
 import { CouponView } from "@/components/ui/coupons/CouponView";
+import { DeletePrompt } from "@/components/ui/DeletePrompt";
 
 
 export const Coupons = () => {
@@ -23,7 +24,9 @@ export const Coupons = () => {
     const [open, setOpen] = useState(false)
     const [openView, setOpenView] = useState(false);
     const [couponView, setCouponView] = useState<Coupon | null>(null);
-    const { coupons, getCoupons, loading, error, pagination } = useCoupons();
+    const { coupons, getCoupons, loading, error, pagination, deleteCoupon } = useCoupons();
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
 
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -87,7 +90,10 @@ export const Coupons = () => {
     }
 
     const handleDelete = (coupon: Coupon) => {
-        console.log(coupon);
+        // console.log(coupon);
+        setCouponToDelete(coupon);
+        setOpenDeleteDialog(true);
+
     }
 
     const handleReset = () => {
@@ -257,7 +263,7 @@ export const Coupons = () => {
                                         {!coupon.is_redeemed &&
                                             <>
                                                 <Button variant="ghost" className="justify-start" onClick={() => { handleEdit(coupon) }}>{t('common.labels.edit')}</Button>
-                                                <Button variant="ghost" className="justify-start w-full" onClick={() => handleChangeStatus(coupon.id, coupon.status === "active" ? "inactive" : "active")}>{t('common.labels.changeStatus')}</Button>
+                                                {/* <Button variant="ghost" className="justify-start w-full" onClick={() => handleChangeStatus(coupon.id, coupon.status === "active" ? "inactive" : "active")}>{t('common.labels.changeStatus')}</Button> */}
                                                 <Button variant="destructive" className="justify-start" onClick={() => handleDelete(coupon)}>{t('common.labels.delete')}</Button>
 
                                             </>}
@@ -290,8 +296,21 @@ export const Coupons = () => {
             )}
 
             <Dialog open={open} onClose={() => setOpen(false)} >
-                <CouponForm onClose={() => setOpen(false)} />
+                <CouponForm
+                    onClose={() => setOpen(false)}
+                    onSuccess={() => getCoupons({ page: currentPage, limit: PAGE_LIMIT, ...appliedFilters })}
+                />
             </Dialog>
+            {openDeleteDialog && couponToDelete && (
+                <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} >
+                    <DeletePrompt
+                        title={t('common.delete')}
+                        message={t('coupons.confirmDelete', { code: couponToDelete.code })}
+                        onConfirm={() => { deleteCoupon(couponToDelete.id); setOpenDeleteDialog(false) }}
+                        onCancel={() => setOpenDeleteDialog(false)}
+                    />
+                </Dialog>
+            )}
         </Layout>
     )
 }

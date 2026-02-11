@@ -1,45 +1,81 @@
-import { type ComponentProps, forwardRef } from "react"
-import { cn } from "@/lib/utils"
+import { type ComponentProps, forwardRef, useState, useRef, useEffect, useCallback } from "react";
+import { cn } from "@/lib/utils";
+import { Button } from "./Button";
+import { ChevronDown, Loader2, Trash, X } from "lucide-react"; // Added a loader icon
+import { Input } from "./Input";
 
-interface SelectProps extends ComponentProps<"div"> {
-    options: { value: any; label: string }[]
-    label: string
+interface AsyncSelectProps extends Omit<ComponentProps<"div">, 'onChange'> {
+    options: { value: any; label: string }[];
+    label: string;
+    value?: any;
+    onChange: (value: any) => void;
+    onSearchChange: (query: string) => void; // Prop to trigger API call
+    isLoading?: boolean; // Show loading state
 }
-const SearchableSelect = forwardRef<HTMLSelectElement, SelectProps>(
-    ({ ...props }) => {
+
+export const SearchableSelect = forwardRef<HTMLDivElement, AsyncSelectProps>(
+    ({ options, label, value, onChange, onSearchChange, isLoading, className, ...props }, ref) => {
+        const [search, setSearch] = useState("");
+        const containerRef = useRef<HTMLDivElement>(null);
+        const [selectedOption, setSelectedOption] = useState(null);
+
+        // Debounce logic: wait 300ms after user stops typing to call the API
+        useEffect(() => {
+            const handler = setTimeout(() => {
+                onSearchChange(search);
+            }, 300);
+
+            return () => clearTimeout(handler);
+        }, [search, onSearchChange]);
+
+        // const selectedOption = options.find((opt) => opt.value === value);
+
+        const handleSelect = (val: any) => {
+            //  console.log(val);
+            onChange(val.value);
+            setSearch(val.label);
+            setSelectedOption(val.label);
+            // setOpen(false);
+        };
+
+
+
         return (
-            <>
+            <div className="w-full">
+                <div className="flex flex-row gap-2">
+                    <Input
+                        placeholder={label}
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
 
-                <button id="dropdownUsersSearchButton" data-dropdown-toggle="dropdownSearch" data-dropdown-placement="bottom" className="inline-flex items-center justify-center text-white bg-brand box-border border border-transparent hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none" type="button">
-                    Dropdown button
-                    <svg className="w-4 h-4 ms-1.5 -me-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7" /></svg>
-                </button>
-
-                <div id="dropdownSearch" className="z-10 hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-54">
-                    <div className="bg-neutral-primary-medium border-b border-default-medium p-2 rounded-t-base">
-                        <label htmlFor="search" className="sr-only">Search</label>
-                        <input type="text" id="search" className="bg-neutral-secondary-strong border border-default-strong text-heading text-sm rounded focus:ring-brand focus:border-brand block w-full px-2.5 py-2 shadow-xs placeholder:text-body" placeholder="Search htmlFor users" required />
-                    </div>
-                    <ul className="h-48 p-2 text-sm text-body font-medium overflow-y-auto" aria-labelledby="dropdownSearchButton">
-                        <li className="w-full flex items-center p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">
-                            <label htmlFor="dropdown-user-9" className="w-full flex items-center justify-between">
-
-                                <input id="dropdown-user-9" type="checkbox" value="" className="w-4 h-4 border border-default-strong rounded-xs bg-neutral-secondary-strong focus:ring-2 focus:ring-brand-soft" />
-                            </label>
-                        </li>
-                        <li className="w-full flex items-center p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">
-                            <label htmlFor="dropdown-user-10" className="w-full flex items-center justify-between">
-
-                                <input id="dropdown-user-10" type="checkbox" value="" className="w-4 h-4 border border-default-strong rounded-xs bg-neutral-secondary-strong focus:ring-2 focus:ring-brand-soft" />
-                            </label>
-                        </li>
-
-                    </ul>
+                        className="w-full"
+                    />
+                    <Button variant="ghost" className="w-12 h-full" onClick={() => { setSearch(""); setSelectedOption(null); }}>
+                        <X />
+                    </Button>
                 </div>
-            </>
-        )
-    }
-)
-SearchableSelect.displayName = "Select"
+                {search.length > 0 && selectedOption === null && (
+                    <ul className="max-h-60 overflow-y-auto p-1 w-full bg-white">
+                        {isLoading ? (
+                            <li className="p-4 flex justify-center"><Loader2 className="animate-spin h-5 w-5 text-muted" /></li>
+                        ) : options.length > 0 ? (
+                            options.map((option) => (
+                                <li
+                                    key={option.value}
+                                    onClick={() => handleSelect(option)}
+                                    className="cursor-pointer rounded-sm px-2 py-2 text-sm hover:bg-neutral-tertiary-medium"
+                                >
+                                    {option.label}
+                                </li>
+                            ))
+                        ) : (
+                            <li className="p-2 text-sm text-center text-muted-foreground">not found</li>
+                        )}
+                    </ul>
+                )}
+            </div>
 
-export { SearchableSelect }
+
+        );
+    }
+);

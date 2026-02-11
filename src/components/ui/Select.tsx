@@ -4,9 +4,10 @@ import { cn } from "@/lib/utils"
 interface SelectProps extends ComponentProps<"select"> {
     options: { value: any; label: string }[]
     label: string
+    errors?: string
 }
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-    ({ className, options, label, ...props }, ref) => {
+    ({ className, options, label, errors, ...props }, ref) => {
         return (
 
 
@@ -35,6 +36,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                     >
                         {label}
                     </label>
+                    {errors && <p className="text-red-500 text-xs mt-1">{errors}</p>}
                 </div>
             </div>
         )

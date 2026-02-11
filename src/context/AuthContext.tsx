@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (response.token) {
         localStorage.setItem('token', response.token);
         setToken(response.token);
-
+        console.log(response);
         // Decode token to get user info
         const decoded = jwtDecode<JWTPayload>(response.token);
         // Persist user data to localStorage

@@ -1,8 +1,13 @@
 import { type ComponentProps, forwardRef } from "react"
 import { cn } from "@/lib/utils"
 
-const Input = forwardRef<HTMLInputElement, ComponentProps<"input">>(
-  ({ className, type, placeholder, ...props }, ref) => {
+interface InputProps extends ComponentProps<"input"> {
+
+  errors?: string;
+}
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, placeholder, errors, ...props }, ref) => {
     return (
       <div className={cn("w-fit", className)}>
         <div className="relative group">
@@ -24,6 +29,7 @@ const Input = forwardRef<HTMLInputElement, ComponentProps<"input">>(
           >
             {placeholder}
           </label>
+          {errors && <p className="text-red-500 text-xs mt-1">{errors}</p>}
         </div>
       </div>
     )

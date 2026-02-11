@@ -248,6 +248,7 @@
     "updated_at": "Fecha de actualización",
     "updated_by": "Actualizado por",
     "created_by": "Creado por",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar este cupón?",
     "filters": {
       "all": "Todos",
       "active": "Activos",
@@ -260,7 +261,7 @@
       "minAmount": "Monto mínimo",
       "maxAmount": "Monto máximo",
       "code": "Código",
-      "redeemedBy": "Redimido por",
+      "redeemedBy": "Asignado a",
       "redeemed": "Redimido",
       "notRedeemed": "No redimido",
       "creator": "Creador",
@@ -275,7 +276,7 @@
       "amount": "Monto",
       "status": "Estado",
       "expiration_date": "Fecha de expiración",
-      "redeemed_by": "Redimido por",
+      "redeemed_by": "Asignado a",
       "with_return": "Con retorno",
       "creator": "Creador",
       "pool": "Pool"
@@ -286,11 +287,11 @@
       "expirationRange": "Rango de expiración",
       "expirationMin": "Activo desde",
       "expirationMax": "Activo hasta",
-      "redeemed_by": "Redimido por",
+      "redeemed_by": "Asignado a",
       "with_return": "Con retorno",
       "creator": "Creador",
       "pool": "Pool",
-      "currency": "Moneda"
+      "token": "Moneda"
     }
   }
 }

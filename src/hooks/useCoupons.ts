@@ -64,6 +64,7 @@ export const useCoupons = () => {
     try {
       const response = await api.delete(`/coupons/${id}`);
       if (response.data.success) {
+        setCoupons((prev) => prev.filter((coupon) => coupon.id !== id));
         return response.data.data;
       }
       return null;
@@ -80,11 +81,16 @@ export const useCoupons = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log(coupon);
       const response = await api.post(`/coupons`, coupon);
       if (response.data.success) {
-        return response.data.data;
+        console.log(response.data);
+        setCoupons((prev) => [response.data.data, ...prev]);
+        return response;
+
       }
       return null;
+
     } catch (err: any) {
       console.error(`Error creating role:`, err);
       setError(err.response?.data?.message || err.message || 'Error creating role');

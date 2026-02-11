@@ -30,6 +30,7 @@ export const CouponView = ({ id, onClose }: CouponViewProps) => {
                         <p>{t('coupons.status')}: <span >{coupon.status}</span></p>
                         <p>{t('coupons.amount')}: <span >{coupon.amount}</span></p>
                         <p>{t('coupons.pool')}: <span >{coupon.pool}</span></p>
+                        <p>{t('coupons.token')}: <span >{coupon.token}</span></p>
                         <p>{t('coupons.creator')}: <span className="text-wrap">{coupon.creator.email} - {coupon.creator.username}</span></p>
 
                         <p>{t('coupons.assigned_user')}:</p>

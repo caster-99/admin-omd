@@ -35,10 +35,10 @@ export interface CouponFilters {
     redeemed_by?: number;
     min_amount?: number;
     max_amount?: number;
-    expires_after?: Date;
-    expires_before?: Date;
-    created_after?: Date;
-    created_before?: Date; 
+    expires_after?: string;
+    expires_before?: string;
+    created_after?: string;
+    created_before?: string; 
     pool?: string;
     returnable?: boolean;
 }
@@ -47,21 +47,12 @@ export interface CreateCouponDTO {
     code: string;
     pool: string; 
     amount: number;
-    status: string;
-    start_date: Date;
-    expiration_date: Date;
+    status?: string;
+    start_date?: string;
+    expiration_date?: string;
     is_redeemed?: boolean;
-    promo?: number;
-    with_return: boolean;
-    currency?: string;
-    creator: {
-        id: number;
-        email: string;
-        username: string;
-    };
-    assigned_user?: {
-        id: number;
-        email: string;
-        username: string;
-    };
+    promotion_id?: number;
+    with_return?: boolean;
+    token?: string;
+    user_id?: number;
 }
