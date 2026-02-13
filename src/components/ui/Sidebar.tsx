@@ -35,7 +35,6 @@ export const Sidebar = ({
                 { title: 'sidebar.users', path: '/dashboard/users' },
                 { title: 'sidebar.rolesAndPermissions', path: '/dashboard/rolesAndPermissions' },
                 { title: 'sidebar.coupons', path: '/dashboard/coupons' },
-                { title: 'sidebar.generalConfig', path: '/dashboard/general-config' },
             ]
         },
         {

@@ -1,4 +1,3 @@
-import { useRoles } from "@/hooks/useRoles";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../Button";
@@ -8,10 +7,8 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import type { Permission, Role } from "@/types/roles";
+import type { Permission } from "@/types/roles";
 import { usePermissions } from "@/hooks/usePermissions";
-import { useUser } from "@/hooks/useUser";
-import { useAuth } from "@/context/AuthContext";
 import { Select } from "../Select";
 // import { useAuth } from "@/ho";
 
@@ -32,7 +29,7 @@ interface PermissionFormProps {
 
 export const PermissionForm = ({ onClose, onSuccess, permissionToEdit }: PermissionFormProps) => {
     const { t } = useTranslation();
-    const { getPermissions, classificationOptions, createPermission, loading, error, updatePermission } = usePermissions()
+    const { getPermissions, classificationOptions, createPermission, loading, updatePermission } = usePermissions()
 
     const [classifications, setClassifications] = useState<{ value: string, label: string }[]>([]);
 

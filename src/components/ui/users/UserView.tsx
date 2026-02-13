@@ -25,7 +25,7 @@ export const UserView = ({ userToView }: UserViewProps) => {
     }, [user]);
 
     const renderUserContent = () => {
-        if (!userToView) return <p className="text-muted-foreground">{t('common.loading')}</p>;
+        if (!userToView) return <Spinner />;
 
         return (
             <div className="flex flex-col gap-4 w-full overflow-y-auto h-[calc(100vh-200px)]">

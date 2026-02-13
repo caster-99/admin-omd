@@ -14,12 +14,15 @@ import { Dialog } from "@/components/ui/Dialog";
 import { UserView } from "@/components/ui/users/UserView";
 import { AssignRolesForm } from "@/components/ui/users/AssignRolesForm";
 import { TableCell } from "@/components/ui/TableCell";
-
+import { useUser } from "@/hooks/useUser";
+import { Spinner } from "@/components/ui/Spinner";
 
 
 export const Users = () => {
     const { t } = useTranslation();
     const { users, getUsers, loading, error, pagination } = useUsers();
+    const { user } = useUser();
+    const userPermissions = user?.permissions?.map((permission) => permission.name);
 
     const roles = ['USER', 'ADMIN', 'SUPPORT', 'DEVELOPER'];
     const [openDialog, setOpenDialog] = useState(false);
@@ -86,99 +89,109 @@ export const Users = () => {
 
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-card p-4 rounded-lg border">
-                    <div className="flex flex-col gap-1">
-                        <Input
-                            placeholder={t('common.placeholders.searchByName')}
-                            value={nameFilter}
-                            onChange={(e) => setNameFilter(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <Input
-                            type="number"
-                            placeholder={t('common.labels.balance')}
-                            value={balanceFilter}
-                            onChange={(e) => setBalanceFilter(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <Select
-                            label={t('common.labels.role')}
-                            value={roleFilter}
-                            onChange={(e) => setRoleFilter(e.target.value)}
-                            options={[
-                                { value: '', label: t('common.labels.allRoles') },
-                                ...roles.map(r => ({ value: r, label: r }))
-                            ]}
-                        />
-                    </div>
-                    <div className="flex items-end">
-                        <Button
-                            variant="outline"
-                            className="w-full"
-                            onClick={() => {
-                                setBalanceFilter('');
-                                setRoleFilter('');
-                                setCurrentPage(1);
-                            }}
-                        >
-                            {t('common.actions.clearFilters')}
-                        </Button>
-                    </div>
-                </div>
+                {userPermissions?.includes('Ver Usuarios') ? (
+                    <>
 
-                <div className="flex flex-col gap-4">
-                    {loading ? (
-                        <p>{t('common.loading')}</p>
-                    ) : users && users.length > 0 ? (
-                        <Table
-                            headers={[t('common.labels.name'), t('common.labels.email'), t('common.labels.state'), t('common.labels.actions')]}
-                        >
-                            {users.map((user: User) => (
-                                <tr key={user.id} className="block md:table-row bg-card mb-4 rounded-lg shadow-sm border p-4 md:p-0 md:mb-0 md:shadow-none md:border-b md:border-border md:bg-transparent">
-                                    <TableCell label={t('common.labels.name')}>{user.name} {user.lastname}</TableCell>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-card p-4 rounded-lg border">
+                            <div className="flex flex-col gap-1">
+                                <Input
+                                    placeholder={t('common.placeholders.searchByName')}
+                                    value={nameFilter}
+                                    onChange={(e) => setNameFilter(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <Input
+                                    type="number"
+                                    placeholder={t('common.labels.balance')}
+                                    value={balanceFilter}
+                                    onChange={(e) => setBalanceFilter(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <Select
+                                    label={t('common.labels.role')}
+                                    value={roleFilter}
+                                    onChange={(e) => setRoleFilter(e.target.value)}
+                                    options={[
+                                        { value: '', label: t('common.labels.allRoles') },
+                                        ...roles.map(r => ({ value: r, label: r }))
+                                    ]}
+                                />
+                            </div>
+                            <div className="flex items-end">
+                                <Button
+                                    variant="outline"
+                                    className="w-full"
+                                    onClick={() => {
+                                        setBalanceFilter('');
+                                        setRoleFilter('');
+                                        setCurrentPage(1);
+                                    }}
+                                >
+                                    {t('common.actions.clearFilters')}
+                                </Button>
+                            </div>
+                        </div>
 
-                                    <TableCell label={t('common.labels.email')}>{user.email}</TableCell>
+                        <div className="flex flex-col gap-4">
+                            {loading ? (
+                                <Spinner />
+                            ) : users && users.length > 0 ? (
+                                <Table
+                                    headers={[t('common.labels.name'), t('common.labels.email'), t('common.labels.state'), t('common.labels.actions')]}
+                                >
+                                    {users.map((user: User) => (
+                                        <tr key={user.id} className="block md:table-row bg-card mb-4 rounded-lg shadow-sm border p-4 md:p-0 md:mb-0 md:shadow-none md:border-b md:border-border md:bg-transparent">
+                                            <TableCell label={t('common.labels.name')}>{user.name} {user.lastname}</TableCell>
+
+                                            <TableCell label={t('common.labels.email')}>{user.email}</TableCell>
 
 
-                                    <TableCell label={t('common.labels.state')}>
-                                        <Chip label={user.status} variant={user.status === 'active' ? 'default' : 'destructive'} />
-                                    </TableCell>
+                                            <TableCell label={t('common.labels.state')}>
+                                                <Chip label={user.status} variant={user.status === 'active' ? 'default' : 'destructive'} />
+                                            </TableCell>
 
-                                    <td className="flex justify-between items-center md:table-cell py-2 md:py-4 md:px-4 border-b md:border-0 last:border-0">
-                                        <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.actions')}</span>
-                                        <div className="flex gap-2">
-                                            <ButtonGroup>
-                                                <Button variant="ghost" className="justify-start" onClick={() => handleView(user)}>{t('common.labels.view')}</Button>
-                                                <Button variant="ghost" className="flex gap-2 py-4 px-6" onClick={() => handleAssignRoles(user.id)}>
-                                                    {t('common.labels.assign')}
-                                                </Button>
-                                            </ButtonGroup>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </Table>
-                    ) : (
-                        <p className="text-center py-8 text-muted-foreground">{error || t('users.noUsersFound')}</p>
-                    )}
+                                            <td className="flex justify-between items-center md:table-cell py-2 md:py-4 md:px-4 border-b md:border-0 last:border-0">
+                                                <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.actions')}</span>
+                                                <div className="flex gap-2">
+                                                    <ButtonGroup>
+                                                        <Button variant="ghost" className="justify-start" onClick={() => handleView(user)}>{t('common.labels.view')}</Button>
+                                                        {userPermissions?.includes('Asignar Roles') && (
+                                                            <Button variant="ghost" className="flex gap-2 py-4 px-6" onClick={() => handleAssignRoles(user.id)}>
+                                                                {t('common.labels.assign')}
+                                                            </Button>
+                                                        )}
+                                                    </ButtonGroup>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </Table>
+                            ) : (
+                                <p className="text-center py-8 text-muted-foreground">{error || t('users.noUsersFound')}</p>
+                            )}
 
-                    <Pagination
-                        currentPage={currentPage}
-                        pagination={pagination}
-                        setCurrentPage={setCurrentPage}
-                    />
-                </div>
-                <Dialog open={openDialog} onClose={() => setOpenDialog(false)} >
+                            <Pagination
+                                currentPage={currentPage}
+                                pagination={pagination}
+                                setCurrentPage={setCurrentPage}
+                            />
+                        </div>
+                        <Dialog open={openDialog} onClose={() => setOpenDialog(false)} >
 
-                    <UserView userToView={userToView} />
+                            <UserView userToView={userToView} />
 
-                </Dialog>
+                        </Dialog>
 
-                <Dialog open={openAssignRolesDialog} onClose={() => setOpenAssignRolesDialog(false)} >
-                    <AssignRolesForm userId={userToAssignRoles!} onClose={() => setOpenAssignRolesDialog(false)} />
-                </Dialog>
+                        <Dialog open={openAssignRolesDialog} onClose={() => setOpenAssignRolesDialog(false)} >
+                            <AssignRolesForm userId={userToAssignRoles!} onClose={() => setOpenAssignRolesDialog(false)} />
+                        </Dialog>
+                    </>
+                ) : (
+                    <p>{t('common.messages.notAuthorized')}</p>
+                )}
+
 
             </div>
         </Layout>

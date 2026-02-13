@@ -17,6 +17,7 @@ import { Plus } from "lucide-react";
 import { CouponForm } from "@/components/ui/coupons/CouponForm";
 import { CouponView } from "@/components/ui/coupons/CouponView";
 import { DeletePrompt } from "@/components/ui/DeletePrompt";
+import { useUser } from "@/hooks/useUser";
 
 
 export const Coupons = () => {
@@ -28,6 +29,8 @@ export const Coupons = () => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
     const [couponToEdit, setCouponToEdit] = useState<Coupon | null>(null);
+    const { user } = useUser();
+    const userPermissions = user?.permissions?.map((permission) => permission.name);
 
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -124,197 +127,214 @@ export const Coupons = () => {
                     <h1 className="text-2xl font-bold">{t('coupons.title')}</h1>
                     <p className="text-muted-foreground">{t('coupons.subtitle')}</p>
                 </div>
-                <Button variant="primary" onClick={() => setOpen(true)} className="flex items-center gap-2">
-                    <Plus size={20} />{t('common.labels.create')}
-                </Button>
+                {userPermissions?.includes('Crear Cupones') && (
+                    <Button variant="primary" onClick={() => setOpen(true)} className="flex items-center gap-2">
+                        <Plus size={20} />{t('common.labels.create')}
+                    </Button>
+                )}
             </div>
+            {userPermissions?.includes('Ver Cupones') ? (
+                <>
+                    <div className="flex flex-col md:flex-row flex-nowrap md:flex-wrap gap-4 mb-6 bg-card p-4 rounded-lg border">
 
-            <div className="flex flex-col md:flex-row flex-nowrap md:flex-wrap gap-4 mb-6 bg-card p-4 rounded-lg border">
-
-                <Input
-                    type="text"
-                    placeholder={t('coupons.filters.code')}
-                    className="w-full md:w-auto"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                />
-
-
-                <Input
-                    type="text"
-                    placeholder={t('coupons.filters.pool')}
-                    className="w-full md:w-auto"
-                    value={pool}
-                    onChange={(e) => setPool(e.target.value)}
-                />
-
-
-                <Select
-                    label={t('coupons.filters.redeemed')}
-                    className="w-full md:w-auto"
-                    value={is_redeemed === undefined ? '' : is_redeemed.toString()}
-                    options={[
-                        { value: '', label: t('coupons.filters.all') },
-                        { value: 'true', label: t('coupons.filters.redeemed') },
-                        { value: 'false', label: t('coupons.filters.notRedeemed') },
-                    ]}
-                    onChange={(e) => setIsRedeemed(e.target.value === '' ? undefined : e.target.value === 'true')}
-                />
-
-                <Input
-                    type="text"
-                    placeholder={t('coupons.filters.redeemedBy')}
-                    className="w-full md:w-auto"
-                    value={redeemed_by || ''}
-                    onChange={(e) => setRedeemedBy(e.target.value ? parseInt(e.target.value) : undefined)}
-                />
-
-                <Select
-                    label={t('coupons.filters.returnable')}
-                    className="w-full md:w-auto"
-                    value={returnable === undefined ? '' : returnable.toString()}
-                    options={[
-                        { value: '', label: t('coupons.filters.all') },
-                        { value: 'true', label: t('coupons.filters.returnable') },
-                        { value: 'false', label: t('coupons.filters.notReturnable') },
-                    ]}
-                    onChange={(e) => setReturnable(e.target.value === '' ? undefined : e.target.value === 'true')}
-                />
-                <Input
-                    type="number"
-                    min={0}
-                    placeholder={t('coupons.filters.minAmount')}
-                    className="w-full md:w-auto"
-                    value={min_amount || ''}
-                    onChange={(e) => setMinAmount(e.target.value ? parseInt(e.target.value) : undefined)}
-                />
-
-                <Input
-                    type="number"
-                    className="w-full md:w-auto"
-                    placeholder={t('coupons.filters.maxAmount')}
-                    value={max_amount || ''}
-                    onChange={(e) => setMaxAmount(e.target.value ? parseInt(e.target.value) : undefined)}
-                />
-
-                <div className="flex flex-col   gap-2">
-
-                    <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                         <Input
-                            type="date"
+                            type="text"
+                            placeholder={t('coupons.filters.code')}
                             className="w-full md:w-auto"
-                            placeholder={t('coupons.filters.expiredAfter')}
-                            value={expires_after || ''}
-                            onChange={(e) => setExpiresAfter(e.target.value)}
-                        />
-                        <Input
-                            type="date"
-                            className="w-full md:w-auto"
-                            placeholder={t('coupons.filters.expiredBefore')}
-                            value={expires_before || ''}
-                            onChange={(e) => setExpiresBefore(e.target.value)}
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
                         />
 
+
+                        <Input
+                            type="text"
+                            placeholder={t('coupons.filters.pool')}
+                            className="w-full md:w-auto"
+                            value={pool}
+                            onChange={(e) => setPool(e.target.value)}
+                        />
+
+
+                        <Select
+                            label={t('coupons.filters.redeemed')}
+                            className="w-full md:w-auto"
+                            value={is_redeemed === undefined ? '' : is_redeemed.toString()}
+                            options={[
+                                { value: '', label: t('coupons.filters.all') },
+                                { value: 'true', label: t('coupons.filters.redeemed') },
+                                { value: 'false', label: t('coupons.filters.notRedeemed') },
+                            ]}
+                            onChange={(e) => setIsRedeemed(e.target.value === '' ? undefined : e.target.value === 'true')}
+                        />
+
+                        <Input
+                            type="text"
+                            placeholder={t('coupons.filters.redeemedBy')}
+                            className="w-full md:w-auto"
+                            value={redeemed_by || ''}
+                            onChange={(e) => setRedeemedBy(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+
+                        <Select
+                            label={t('coupons.filters.returnable')}
+                            className="w-full md:w-auto"
+                            value={returnable === undefined ? '' : returnable.toString()}
+                            options={[
+                                { value: '', label: t('coupons.filters.all') },
+                                { value: 'true', label: t('coupons.filters.returnable') },
+                                { value: 'false', label: t('coupons.filters.notReturnable') },
+                            ]}
+                            onChange={(e) => setReturnable(e.target.value === '' ? undefined : e.target.value === 'true')}
+                        />
+                        <Input
+                            type="number"
+                            min={0}
+                            placeholder={t('coupons.filters.minAmount')}
+                            className="w-full md:w-auto"
+                            value={min_amount || ''}
+                            onChange={(e) => setMinAmount(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+
+                        <Input
+                            type="number"
+                            className="w-full md:w-auto"
+                            placeholder={t('coupons.filters.maxAmount')}
+                            value={max_amount || ''}
+                            onChange={(e) => setMaxAmount(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+
+                        <div className="flex flex-col   gap-2">
+
+                            <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                                <Input
+                                    type="date"
+                                    className="w-full md:w-auto"
+                                    placeholder={t('coupons.filters.expiredAfter')}
+                                    value={expires_after || ''}
+                                    onChange={(e) => setExpiresAfter(e.target.value)}
+                                />
+                                <Input
+                                    type="date"
+                                    className="w-full md:w-auto"
+                                    placeholder={t('coupons.filters.expiredBefore')}
+                                    value={expires_before || ''}
+                                    onChange={(e) => setExpiresBefore(e.target.value)}
+                                />
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div className="flex flex-col md:flex-row gap-2">
+                            <Input
+                                type="date"
+                                placeholder={t('coupons.filters.createdAfter')}
+                                className="w-full md:w-auto"
+                                value={created_after || ''}
+                                onChange={(e) => setCreatedAfter(e.target.value)}
+                            />
+                            <Input
+                                type="date"
+                                placeholder={t('coupons.filters.createdBefore')}
+                                className="w-full md:w-auto"
+                                value={created_before || ''}
+                                onChange={(e) => setCreatedBefore(e.target.value)}
+                            />
+                        </div>
+
+
+
+
+                        <Button variant="primary" onClick={handleApplyFilters}>{t('common.labels.search')}</Button>
+                        <Button variant="outline" onClick={handleReset}> {t('common.actions.clearFilters')}</Button>
                     </div>
 
-                </div>
+                    {coupons && coupons.length > 0 ? (
+                        <Table headers={[t('coupons.headers.code'), t('coupons.headers.amount'), t('coupons.headers.pool'),
+                        // t('coupons.headers.status'),
+                        t('coupons.headers.expiration_date'), t('coupons.headers.redeemed_by'), t('coupons.headers.with_return'), t('coupons.headers.creator'), t('common.labels.actions')]} >
+                            {coupons.map((coupon) => (
+                                <tr key={coupon.id} className="block md:table-row bg-card mb-4 rounded-lg shadow-sm border p-4 md:p-0 md:mb-0 md:shadow-none md:border-b md:border-border md:bg-transparent">
+                                    <TableCell label={t('coupons.headers.code')}><CopyTextComponent textToCopy={coupon.code} /></TableCell>
+                                    <TableCell label={t('coupons.headers.amount')}>{coupon.amount}</TableCell>
+                                    <TableCell label={t('coupons.headers.pool')}>{coupon.pool}</TableCell>
+                                    {/* <TableCell label={t('coupons.headers.status')}>{coupon.status}</TableCell> */}
+                                    <TableCell label={t('coupons.headers.expiration_date')}>{new Date(coupon.expiration_date).toLocaleDateString()}</TableCell>
+                                    <TableCell label={t('coupons.headers.redeemed_by')}>{coupon.assigned_user?.username || 'N/A'}</TableCell>
+                                    <TableCell label={t('coupons.headers.with_return')}>{coupon.with_return}</TableCell>
+                                    <TableCell label={t('coupons.headers.creator')}>{coupon.creator?.username || 'N/A'}</TableCell>
+                                    <td className="flex justify-between items-center md:table-cell py-2 md:py-4 md:px-4 border-b md:border-0 last:border-0">
+                                        <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.actions')}</span>
+                                        <div className="flex gap-2">
+                                            <ButtonGroup >
 
+                                                <Button variant="ghost" className="justify-start" onClick={() => { handleView(coupon) }}>{t('common.labels.view')}</Button>
 
+                                                {!coupon.is_redeemed &&
+                                                    <>
+                                                        {userPermissions?.includes('Editar Cupones') &&
+                                                            <Button variant="ghost" className="justify-start" onClick={() => { handleEdit(coupon) }}>{t('common.labels.edit')}</Button>
+                                                        }
 
-                <div className="flex flex-col md:flex-row gap-2">
-                    <Input
-                        type="date"
-                        placeholder={t('coupons.filters.createdAfter')}
-                        className="w-full md:w-auto"
-                        value={created_after || ''}
-                        onChange={(e) => setCreatedAfter(e.target.value)}
-                    />
-                    <Input
-                        type="date"
-                        placeholder={t('coupons.filters.createdBefore')}
-                        className="w-full md:w-auto"
-                        value={created_before || ''}
-                        onChange={(e) => setCreatedBefore(e.target.value)}
-                    />
-                </div>
+                                                        {/* <Button variant="ghost" className="justify-start w-full" onClick={() => handleChangeStatus(coupon.id, coupon.status === "active" ? "inactive" : "active")}>{t('common.labels.changeStatus')}</Button> */}
+                                                        {userPermissions?.includes('Eliminar Cupones') &&
+                                                            <Button variant="destructive" className="justify-start" onClick={() => handleDelete(coupon)}>{t('common.labels.delete')}</Button>
+                                                        }
 
+                                                    </>}
 
+                                            </ButtonGroup>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </Table>
+                    ) : (
+                        loading && (
+                            <Spinner />
+                        ) || error && (
+                            <p>{error}</p>
+                        )
+                    )}
 
+                    {pagination && (
+                        <Pagination
+                            currentPage={currentPage}
+                            pagination={pagination}
+                            setCurrentPage={setCurrentPage}
+                        />
+                    )}
+                    {couponView && (
+                        <Dialog open={openView} onClose={() => setOpenView(false)} >
+                            <CouponView id={couponView.id} />
+                        </Dialog>
+                    )}
 
-                <Button variant="primary" onClick={handleApplyFilters}>{t('common.labels.search')}</Button>
-                <Button variant="outline" onClick={handleReset}> {t('common.actions.clearFilters')}</Button>
-            </div>
+                    <Dialog open={open} onClose={() => setOpen(false)} >
+                        <CouponForm
+                            onClose={() => setOpen(false)}
+                            coupon={couponToEdit ? couponToEdit : undefined}
+                            onSuccess={() => getCoupons({ page: currentPage, limit: PAGE_LIMIT, ...appliedFilters })}
+                        />
+                    </Dialog>
+                    {openDeleteDialog && couponToDelete && (
+                        <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} >
+                            <DeletePrompt
+                                title={t('common.delete')}
+                                message={t('coupons.confirmDelete', { code: couponToDelete.code })}
+                                onConfirm={() => { deleteCoupon(couponToDelete.id); setOpenDeleteDialog(false) }}
+                                onCancel={() => setOpenDeleteDialog(false)}
+                            />
+                        </Dialog>
+                    )}
 
-            {coupons && coupons.length > 0 ? (
-                <Table headers={[t('coupons.headers.code'), t('coupons.headers.amount'), t('coupons.headers.pool'), t('coupons.headers.status'), t('coupons.headers.expiration_date'), t('coupons.headers.redeemed_by'), t('coupons.headers.with_return'), t('coupons.headers.creator'), t('common.labels.actions')]} >
-                    {coupons.map((coupon) => (
-                        <tr key={coupon.id} className="block md:table-row bg-card mb-4 rounded-lg shadow-sm border p-4 md:p-0 md:mb-0 md:shadow-none md:border-b md:border-border md:bg-transparent">
-                            <TableCell label={t('coupons.headers.code')}><CopyTextComponent textToCopy={coupon.code} /></TableCell>
-                            <TableCell label={t('coupons.headers.amount')}>{coupon.amount}</TableCell>
-                            <TableCell label={t('coupons.headers.pool')}>{coupon.pool}</TableCell>
-                            <TableCell label={t('coupons.headers.status')}>{coupon.status}</TableCell>
-                            <TableCell label={t('coupons.headers.expiration_date')}>{new Date(coupon.expiration_date).toLocaleDateString()}</TableCell>
-                            <TableCell label={t('coupons.headers.redeemed_by')}>{coupon.assigned_user?.username || 'N/A'}</TableCell>
-                            <TableCell label={t('coupons.headers.with_return')}>{coupon.with_return}</TableCell>
-                            <TableCell label={t('coupons.headers.creator')}>{coupon.creator?.username || 'N/A'}</TableCell>
-                            <td className="flex justify-between items-center md:table-cell py-2 md:py-4 md:px-4 border-b md:border-0 last:border-0">
-                                <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.actions')}</span>
-                                <div className="flex gap-2">
-                                    <ButtonGroup >
-
-                                        <Button variant="ghost" className="justify-start" onClick={() => { handleView(coupon) }}>{t('common.labels.view')}</Button>
-                                        {!coupon.is_redeemed &&
-                                            <>
-                                                <Button variant="ghost" className="justify-start" onClick={() => { handleEdit(coupon) }}>{t('common.labels.edit')}</Button>
-                                                {/* <Button variant="ghost" className="justify-start w-full" onClick={() => handleChangeStatus(coupon.id, coupon.status === "active" ? "inactive" : "active")}>{t('common.labels.changeStatus')}</Button> */}
-                                                <Button variant="destructive" className="justify-start" onClick={() => handleDelete(coupon)}>{t('common.labels.delete')}</Button>
-
-                                            </>}
-
-                                    </ButtonGroup>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                </Table>
+                </>
             ) : (
-                loading && (
-                    <Spinner />
-                ) || error && (
-                    <p>{error}</p>
-                )
+                <p>{t('common.labels.noPermissions')}</p>
             )}
 
-            {pagination && (
-                <Pagination
-                    currentPage={currentPage}
-                    pagination={pagination}
-                    setCurrentPage={setCurrentPage}
-                />
-            )}
-            {couponView && (
-                <Dialog open={openView} onClose={() => setOpenView(false)} >
-                    <CouponView id={couponView.id} />
-                </Dialog>
-            )}
-
-            <Dialog open={open} onClose={() => setOpen(false)} >
-                <CouponForm
-                    onClose={() => setOpen(false)}
-                    coupon={couponToEdit ? couponToEdit : undefined}
-                    onSuccess={() => getCoupons({ page: currentPage, limit: PAGE_LIMIT, ...appliedFilters })}
-                />
-            </Dialog>
-            {openDeleteDialog && couponToDelete && (
-                <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} >
-                    <DeletePrompt
-                        title={t('common.delete')}
-                        message={t('coupons.confirmDelete', { code: couponToDelete.code })}
-                        onConfirm={() => { deleteCoupon(couponToDelete.id); setOpenDeleteDialog(false) }}
-                        onCancel={() => setOpenDeleteDialog(false)}
-                    />
-                </Dialog>
-            )}
         </Layout>
     )
 }

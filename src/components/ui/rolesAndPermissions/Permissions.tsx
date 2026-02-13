@@ -11,7 +11,7 @@ import { PermissionForm } from "./PermissionForm";
 
 export const Permissions = () => {
     const { t } = useTranslation();
-    const { getPermissions, error, loading, groupedPermissions, createPermission, updatePermission, deletePermission } = usePermissions();
+    const { getPermissions, error, loading, groupedPermissions } = usePermissions();
     const [openDialog, setOpenDialog] = useState(false);
     const { user } = useUser();
     const userPermissions = user?.permissions?.map((permission) => permission.name);
