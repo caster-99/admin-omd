@@ -4,6 +4,7 @@ import authService from '@/services/authService';
 import type { User, JWTPayload, AuthContextType } from '@/types/auth';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import type { Permission } from '@/types/permissions';
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -172,7 +173,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updatePermissionsLocally = (roleId: number, newPermissions: Permission[]) => {
+    if (!user) return;
 
+    const updatedRoles = user.roles.map(role =>
+      role.id === roleId ? { ...role, permissions: newPermissions } : role
+    );
+    console.log(updatedRoles);
+    window.location.reload();
+
+    const updatedUser = { ...user, roles: updatedRoles };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
 
 
   return (
@@ -183,6 +196,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       register,
       logout,
       isAuthenticated: !!user,
+      updatePermissionsLocally,
       loading
     }}>
       {children}

@@ -8,8 +8,11 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import type { Role } from "@/types/roles";
+import type { Permission, Role } from "@/types/roles";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useUser } from "@/hooks/useUser";
+import { useAuth } from "@/context/AuthContext";
+// import { useAuth } from "@/ho";
 
 const schema = yup.object().shape({
     name: yup.string().required('Name is required'),
@@ -22,13 +25,16 @@ interface RoleFormProps {
     onClose: () => void;
     onSuccess?: () => void;
     roleToEdit?: Role | null;
+    reload: () => void;
 }
 
-export const RoleForm = ({ onClose, onSuccess, roleToEdit }: RoleFormProps) => {
+export const RoleForm = ({ onClose, onSuccess, roleToEdit, reload }: RoleFormProps) => {
     const { t } = useTranslation();
+    const { user } = useUser();
+    const { updatePermissionsLocally } = useAuth();
     const { createRole, updateRole, loading } = useRoles();
     const { permissions, getPermissions } = usePermissions();
-    const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
+    const [selectedPermissions, setSelectedPermissions] = useState<Permission[]>([]);
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
         resolver: yupResolver(schema),
@@ -48,7 +54,7 @@ export const RoleForm = ({ onClose, onSuccess, roleToEdit }: RoleFormProps) => {
                 name: roleToEdit.name,
                 description: roleToEdit.description,
             });
-            setSelectedPermissions(roleToEdit.permissions.map(p => p.id));
+            setSelectedPermissions(roleToEdit.permissions);
         } else {
             reset({
                 name: "",
@@ -66,15 +72,23 @@ export const RoleForm = ({ onClose, onSuccess, roleToEdit }: RoleFormProps) => {
                 await updateRole(roleToEdit.id, {
                     name: data.name,
                     description: data.description,
-                    permissions: selectedPermissions,
+                    permissions: selectedPermissions.map(p => p.id),
+                    status: roleToEdit.status,
                 });
                 toast.success(t('common.messages.updateSuccess'));
+                const iHaveThisRole = user?.roles.some(role => role.id === roleToEdit.id);
+
+                if (iHaveThisRole) {
+                    // console.log(permissions);
+                    updatePermissionsLocally(roleToEdit.id, selectedPermissions);
+                    reload();
+                }
             } else {
                 console.log(data.name, data.description, selectedPermissions);
                 await createRole({
                     name: data.name,
                     description: data.description,
-                    permissions: selectedPermissions
+                    permissions: selectedPermissions.map(p => p.id)
                 });
                 toast.success(t('common.messages.createSuccess'));
             }
@@ -85,11 +99,11 @@ export const RoleForm = ({ onClose, onSuccess, roleToEdit }: RoleFormProps) => {
         }
     }
 
-    const handlePermissionChange = (permissionId: number) => {
+    const handlePermissionChange = (permission: Permission) => {
         setSelectedPermissions(prev =>
-            prev.includes(permissionId)
-                ? prev.filter(id => id !== permissionId)
-                : [...prev, permissionId]
+            prev.some(p => p.id === permission.id)
+                ? prev.filter(p => p.id !== permission.id)
+                : [...prev, permission]
         );
     }
 
@@ -123,8 +137,8 @@ export const RoleForm = ({ onClose, onSuccess, roleToEdit }: RoleFormProps) => {
                             <input
                                 type="checkbox"
                                 id={`permission-${permission.id}`}
-                                checked={selectedPermissions.includes(permission.id)}
-                                onChange={() => handlePermissionChange(permission.id)}
+                                checked={selectedPermissions.some(p => p.id === permission.id)}
+                                onChange={() => handlePermissionChange(permission)}
                             />
                             <label htmlFor={`permission-${permission.id}`} className="text-sm cursor-pointer">
                                 {permission.name}

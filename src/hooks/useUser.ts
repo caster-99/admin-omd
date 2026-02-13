@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
  * Provides easy access to auth state and actions
  */
 export function useUser() {
-  const { user, isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, loading, updatePermissionsLocally } = useAuth();
 
   return {
     // User data
@@ -20,5 +20,6 @@ export function useUser() {
     // isAdmin,
     // isUser,
     loading,
+    updatePermissionsLocally,
   };
 }

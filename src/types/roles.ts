@@ -14,10 +14,12 @@ export interface CreateRoleDTO {
   name: string;
   description: string;
   permissions: number[]; // Array of permission IDs
+  
 }
 
 export interface UpdateRoleDTO {
   name?: string;
   description?: string;
-    permissions?: number[];   
+    permissions?: number[];  
+    status?: string; 
 }

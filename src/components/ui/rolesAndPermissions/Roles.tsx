@@ -12,6 +12,9 @@ import { Spinner } from "../Spinner";
 import { RoleView } from "./RoleView";
 import { DeletePrompt } from "../DeletePrompt";
 import { TableCell } from "../TableCell";
+import { usePermissions } from "@/hooks/usePermissions";
+import { useUser } from "@/hooks/useUser";
+
 export const Roles = () => {
     const { t } = useTranslation();
     const { roles, getRoles, loading, error, deleteRole, changeStatus } = useRoles();
@@ -21,10 +24,28 @@ export const Roles = () => {
     const [roleToView, setRoleToView] = useState<Role | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
+    const { getPermissions } = usePermissions();
+    const { user } = useUser();
+    const userPermissions = user?.permissions?.map((permission) => permission.name);
+
+    /**
+     * ToDo: add a way to get the user permissions without reloading the page or login again
+     */
+    const reload = () => {
+        window.location.reload();
+    };
 
     useEffect(() => {
-        getRoles();
+        getPermissions();
+        // console.log(user);
+    }, [getPermissions]);
+
+    useEffect(() => {
+        if (userPermissions?.includes('Ver Roles')) {
+            getRoles();
+        }
     }, [getRoles]);
+
 
     const handleOpenCreate = () => {
         setRoleToEdit(null);
@@ -78,50 +99,66 @@ export const Roles = () => {
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-foreground">{t('roles.title')}</h2>
-                    <Button className="flex gap-2 py-4 px-6" onClick={handleOpenCreate}>
-                        <Plus size={20} />
-                        {t('common.labels.create')}
-                    </Button>
-                </div>
-                <div className="flex flex-col gap-4">
-                    {loading ? (
-                        <Spinner />
-                    ) : roles && roles.length > 0 ? (
-                        <Table
-                            title={t('roles.title')}
-                            subtitle={t('roles.rolesList')}
-                            headers={[t('common.labels.name'), t('common.labels.state'), t('common.labels.created'), t('common.labels.actions')]}
-                        >
-                            {roles.map((role) => (
-                                <tr key={role.id} className="block md:table-row bg-card mb-4 rounded-lg shadow-sm border p-4 md:p-0 md:mb-0 md:shadow-none md:border-b md:border-border md:bg-transparent">
-                                    <TableCell label={t('common.labels.name')}>{role.name}</TableCell>
-                                    <TableCell label={t('common.labels.state')}>
-                                        <span className={`px-2 py-1 rounded-full text-xs ${role.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                            {role.status}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell label={t('common.labels.created')}>{new Date(role.created_at).toLocaleDateString() || 'N/A'}</TableCell>
-                                    <td className="flex justify-between     items-center md:table-cell py-2 md:py-4 md:px-4 border-b md:border-0 last:border-0">
-                                        <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.actions')}</span>
-                                        <div className="flex gap-2">
-                                            <ButtonGroup >
-                                                <Button variant="ghost" className="justify-start" onClick={() => { handleView(role) }}>{t('common.labels.view')}</Button>
-                                                <Button variant="ghost" className="justify-start" onClick={() => handleEdit(role)}>{t('roles.editRole')}</Button>
-                                                <Button variant="ghost" className="justify-start w-full" onClick={() => handleChangeStatus(role.id, role.status === "active" ? "inactive" : "active")}>{t('common.labels.changeStatus')}</Button>
-                                                <Button variant="destructive" className="justify-start" onClick={() => handleDelete(role)}>{t('common.labels.delete')}</Button>
-                                            </ButtonGroup>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </Table>
-                    ) : (
-                        <p className="text-center py-8 text-muted-foreground">{error || t('users.noRolesFound')}</p>
+                    {userPermissions?.includes('Crear Roles') && (
+                        <Button className="flex gap-2 py-4 px-6" onClick={handleOpenCreate}>
+                            <Plus size={20} />
+                            {t('common.labels.create')}
+                        </Button>
                     )}
                 </div>
+                {userPermissions?.includes('Ver Roles') ? (
+                    <div className="flex flex-col gap-4">
+                        {loading ? (
+                            <Spinner />
+                        ) : roles && roles.length > 0 ? (
+                            <Table
+                                title={t('roles.title')}
+                                subtitle={t('roles.rolesList')}
+                                headers={[t('common.labels.name'), t('common.labels.state'), t('common.labels.created'), t('common.labels.actions')]}
+                            >
+                                {roles.map((role) => (
+                                    <tr key={role.id} className="block md:table-row bg-card mb-4 rounded-lg shadow-sm border p-4 md:p-0 md:mb-0 md:shadow-none md:border-b md:border-border md:bg-transparent">
+                                        <TableCell label={t('common.labels.name')}>{role.name}</TableCell>
+                                        <TableCell label={t('common.labels.state')}>
+                                            <span className={`px-2 py-1 rounded-full text-xs ${role.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                {role.status}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell label={t('common.labels.created')}>{new Date(role.created_at).toLocaleDateString() || 'N/A'}</TableCell>
+                                        <td className="flex justify-between     items-center md:table-cell py-2 md:py-4 md:px-4 border-b md:border-0 last:border-0">
+                                            <span className="font-semibold md:hidden text-muted-foreground">{t('common.labels.actions')}</span>
+                                            <div className="flex gap-2">
+                                                <ButtonGroup >
+                                                    {userPermissions?.includes('Ver Roles') && (
+                                                        <Button variant="ghost" className="justify-start" onClick={() => { handleView(role) }}>{t('common.labels.view')}</Button>
+                                                    )}
+                                                    {userPermissions?.includes('Editar Roles') && (
+                                                        <>
+                                                            <Button variant="ghost" className="justify-start" onClick={() => handleEdit(role)}>{t('roles.editRole')}</Button>
+                                                            <Button variant="ghost" className="justify-start w-full" onClick={() => handleChangeStatus(role.id, role.status === "active" ? "inactive" : "active")}>{t('common.labels.changeStatus')}</Button>
+
+                                                        </>)}
+
+                                                    {userPermissions?.includes('Eliminar Roles') && (
+                                                        <Button variant="destructive" className="justify-start" onClick={() => handleDelete(role)}>{t('common.labels.delete')}</Button>
+                                                    )}
+                                                </ButtonGroup>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </Table>
+                        ) : (
+                            <p className="text-center py-8 text-muted-foreground">{error || t('users.noRolesFound')}</p>
+                        )}
+                    </div>
+                ) : (
+                    <p className="text-center py-8 text-muted-foreground">{t('common.labels.noPermissions')}</p>
+                )}
+
             </div>
             <Dialog open={openDialog} onClose={handleClose}>
-                <RoleForm onClose={handleClose} roleToEdit={roleToEdit} onSuccess={getRoles} />
+                <RoleForm onClose={handleClose} roleToEdit={roleToEdit} onSuccess={getRoles} reload={reload} />
             </Dialog>
 
             {/* Dialog only for view */}

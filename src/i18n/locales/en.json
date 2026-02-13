@@ -43,7 +43,8 @@
       "balance": "Balance",
       "allRoles": "All Roles",
       "assign": "Assign role",
-      "user": "User"
+      "user": "User",
+      "noPermissions": "You don't have permissions to perform this action"
     },
     "placeholders": {
       "searchByName": "Search user",
@@ -213,7 +214,11 @@
     "subtitle": "System Permissions",
     "permissionManagement": "Permission Management",
     "permissionManagementSubtitle": "System Permissions",
-    "noPermissionsFound": "No permissions found."
+    "noPermissionsFound": "No permissions found.",
+    "selectClassification": "Select Classification",
+    "createPermission": "Create Permission",
+    "editPermission": "Edit Permission",
+    "permissionDetails": "Permission Details"
   },
   "audits": {
     "title": "Audit Management",

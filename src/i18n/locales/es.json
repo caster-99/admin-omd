@@ -54,7 +54,8 @@
       "updatedAt": "Fecha de actualización",
       "roles": "Roles",
       "status": "Estado",
-      "user": "Usuario"
+      "user": "Usuario",
+      "noPermissions": "No tienes permisos para realizar esta acción"
     },
     "placeholders": {
       "searchByName": "Buscar usuario",
@@ -219,7 +220,11 @@
     "subtitle": "Permisos del Sistema",
     "permissionManagement": "Gestión de Permisos",
     "permissionManagementSubtitle": "Permisos del Sistema",
-    "noPermissionsFound": "No se encontraron permisos."
+    "noPermissionsFound": "No se encontraron permisos.",
+    "selectClassification": "Seleccionar Clasificación",
+    "createPermission": "Crear Permiso",
+    "editPermission": "Editar Permiso",
+    "permissionDetails": "Detalles del Permiso"
   },
   "audits": {
     "title": "Gestión de Auditorías",

@@ -4,3 +4,9 @@ export interface Permission {
     description: string;
     classification: string;
 }
+
+export interface CreatePermissionDTO {
+    name: string;
+    description: string;
+    classification: string;
+}

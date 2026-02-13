@@ -1,4 +1,4 @@
-import type { Role } from '@/types/roles';
+import type { Permission, Role } from '@/types/roles';
 import api from './api';
 
 export interface LoginRequest {
@@ -13,7 +13,7 @@ export interface LoginResponse {
     email: string;
     name?: string;
     roles?: Pick<Role, 'id'>[];
-    permissions?: string[];
+    permissions: Pick<Permission, 'id' | 'name' | 'classification'>[];
   };
   message?: string;
 }
@@ -76,6 +76,11 @@ class AuthService {
       console.error('Logout error:', error);
       // Even if the API call fails, we should still clear local data
     }
+  }
+
+  async getCurrentUser(): Promise<LoginResponse> {
+    const response = await api.get<LoginResponse>('/auth/me');
+    return response.data;
   }
 
 
