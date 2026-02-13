@@ -108,6 +108,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           email: response?.user?.email!,
           name: response?.user?.name!,
           roles: response?.user?.roles || [],
+          permissions: response?.user?.permissions!,
         });
 
       } else if (response.user) {
@@ -116,7 +117,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id: Number(response.user.id),
           email: response.user.email,
           name: response.user.name || '',
-          roles: response.user.roles || []
+          roles: response.user.roles || [],
+          permissions: response.user.permissions!,
         });
       }
 

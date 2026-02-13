@@ -57,7 +57,7 @@
       "user": "Usuario"
     },
     "placeholders": {
-      "searchByName": "Buscar por nombre...",
+      "searchByName": "Buscar usuario",
       "balance": "Saldo..."
     },
     "actions": {

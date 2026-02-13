@@ -11,6 +11,7 @@ export interface User {
   name: string;
   password?: string;
   roles: Pick<Role, 'id'>[];
+  permissions: any[];
 }
 
 export interface JWTPayload extends User {

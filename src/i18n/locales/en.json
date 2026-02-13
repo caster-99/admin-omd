@@ -46,7 +46,7 @@
       "user": "User"
     },
     "placeholders": {
-      "searchByName": "Search by name...",
+      "searchByName": "Search user",
       "balance": "Balance..."
     },
     "actions": {

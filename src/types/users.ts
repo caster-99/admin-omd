@@ -19,11 +19,9 @@ export interface UserFilters {
     includeRoles?: boolean;
     page?: number;
     limit?: number;
-    name?: string;
-    username?: string;
-    email?: string;
-    lastname?: string;
+    name?: string; 
     balance?: number | string;
     role?: number | string;
     includePermissions?: boolean;
+    status?: string;
 }

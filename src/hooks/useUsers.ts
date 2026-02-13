@@ -28,7 +28,7 @@ export const useUsers = () => {
         Object.entries(filters).filter(([_, value]) => value !== '' && value !== null && value !== undefined)
       );
 
-      const response = await api.get('/users/search', { params });
+      const response = await api.get('/users/search?includeRoles=true', { params });
       if (response.data.success) {
         setUsers(response.data.data);
         setPagination(response.data.pagination);

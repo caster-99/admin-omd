@@ -3,8 +3,6 @@ import { useTranslation } from "react-i18next"
 import { useEffect, useState } from "react";
 import type { User } from "@/types/users";
 import { useUsers } from "@/hooks/useUsers";
-
-import { useRoles } from "@/hooks/useRoles";
 import { Table } from "@/components/ui/Table";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
@@ -23,7 +21,7 @@ export const Users = () => {
     const { t } = useTranslation();
     const { users, getUsers, loading, error, pagination } = useUsers();
 
-    const { getRoles, roles } = useRoles();
+    const roles = ['USER', 'ADMIN', 'SUPPORT', 'DEVELOPER'];
     const [openDialog, setOpenDialog] = useState(false);
     const [openAssignRolesDialog, setOpenAssignRolesDialog] = useState(false);
     const [userToView, setUserToView] = useState<number | null>(null);
@@ -32,8 +30,11 @@ export const Users = () => {
     /**
      * Individual filters
      */
+    const [nameFilter, setNameFilter] = useState('');
     const [balanceFilter, setBalanceFilter] = useState('');
     const [roleFilter, setRoleFilter] = useState('');
+    const [debouncedName, setDebouncedName] = useState('');
+    const [debouncedBalance, setDebouncedBalance] = useState('');
 
     /*
     * Pagination
@@ -43,21 +44,26 @@ export const Users = () => {
     const PAGE_LIMIT = 10;
 
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedName(nameFilter);
+            setDebouncedBalance(balanceFilter);
+        }, 500);
 
+        return () => clearTimeout(timer);
+    }, [nameFilter, balanceFilter]);
 
     useEffect(() => {
         getUsers({
-            includeRoles: false,
             page: currentPage,
             limit: PAGE_LIMIT,
-            balance: balanceFilter,
+            name: debouncedName,
+            balance: debouncedBalance,
             role: roleFilter
         });
-    }, [getUsers, currentPage, balanceFilter, roleFilter]);
+    }, [getUsers, currentPage, debouncedName, debouncedBalance, roleFilter]);
 
-    useEffect(() => {
-        getRoles();
-    }, [getRoles]);
+
 
     const handleAssignRoles = (userId: number) => {
         setUserToAssignRoles(userId);
@@ -81,14 +87,13 @@ export const Users = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-card p-4 rounded-lg border">
-                    {/* <div className="flex flex-col gap-1">
-                        <label className="text-sm font-medium">{t('common.labels.name')}</label>
+                    <div className="flex flex-col gap-1">
                         <Input
                             placeholder={t('common.placeholders.searchByName')}
-                            value={filters.name}
-                            onChange={(e) => updateFilter('name', e.target.value)}
+                            value={nameFilter}
+                            onChange={(e) => setNameFilter(e.target.value)}
                         />
-                    </div> */}
+                    </div>
                     <div className="flex flex-col gap-1">
                         <Input
                             type="number"
@@ -104,7 +109,7 @@ export const Users = () => {
                             onChange={(e) => setRoleFilter(e.target.value)}
                             options={[
                                 { value: '', label: t('common.labels.allRoles') },
-                                ...roles.map(r => ({ value: r.id.toString(), label: r.name }))
+                                ...roles.map(r => ({ value: r, label: r }))
                             ]}
                         />
                     </div>
