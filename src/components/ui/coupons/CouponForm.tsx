@@ -65,7 +65,7 @@ type CreateCouponInputs = yup.InferType<typeof schema>;
 
 export const CouponForm = ({ coupon, onClose, onSuccess }: CouponFormProps) => {
     const { t } = useTranslation();
-    const { createCoupon, updateCoupon } = useCoupons();
+    const { createCoupon, updateCoupon, error } = useCoupons();
     const isEditing = !!coupon;
 
     const [code, setCode] = useState('');
@@ -76,6 +76,7 @@ export const CouponForm = ({ coupon, onClose, onSuccess }: CouponFormProps) => {
     const [promotion, setPromotion] = useState("");
     const [startDate, setStartDate] = useState("");
     const [expirationDate, setExpirationDate] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
 
     const { getUsers, users } = useUsers();
@@ -215,9 +216,11 @@ export const CouponForm = ({ coupon, onClose, onSuccess }: CouponFormProps) => {
             response = await createCoupon(data);
         }
 
-        if (response?.data.success) {
+        if (response?.data.data.success) {
             onSuccess?.();
             onClose();
+        } else {
+            setErrorMessage(response?.data.data.error.message);
         }
     };
     const onError = (errors: any) => {
@@ -345,6 +348,7 @@ export const CouponForm = ({ coupon, onClose, onSuccess }: CouponFormProps) => {
                     </div>
                 </div>
                 <Button type="submit">{t('common.save')}</Button>
+                {errorMessage && <p className="text-red-500">{errorMessage}</p>}
             </form>
         </div>
     );
