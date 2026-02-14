@@ -49,7 +49,10 @@ const schema = yup.object().shape({
     }),
     is_redeemed: yup.boolean().optional(),
     status: yup.string().optional(),
-    start_date: yup.string().optional(),
+    start_date: yup.string().optional().test('is-date', 'Fecha de inicio debe ser en el futuro', function (value) {
+        if (!value) return true;
+        return new Date(value) > new Date();
+    }),
     expiration_date: yup.string().optional().test('is-after-start', 'Fecha de expiración debe ser mayor a la fecha de inicio', function (value) {
         const { start_date } = this.parent;
         if (!value || !start_date) return true;
@@ -89,11 +92,16 @@ export const CouponForm = ({ coupon, onClose, onSuccess }: CouponFormProps) => {
         "omd3"
     ];
 
-    const tokenOptions = [
+    const tokenOMDBOptions = [
         "",
         "usdt",
         "omdb",
-        "omd3"
+    ];
+
+    const tokenOMDOptions = [
+        "",
+        "usdt",
+        "omd"
     ];
 
     const promotionOptions = [
@@ -207,7 +215,7 @@ export const CouponForm = ({ coupon, onClose, onSuccess }: CouponFormProps) => {
             response = await createCoupon(data);
         }
 
-        if (response) {
+        if (response?.data.success) {
             onSuccess?.();
             onClose();
         }
@@ -273,7 +281,18 @@ export const CouponForm = ({ coupon, onClose, onSuccess }: CouponFormProps) => {
                     <Select label={t('coupons.labels.token')}
                         className="w-full"
                         value={token}
-                        options={tokenOptions.map((token) => ({ value: token, label: token }))}
+                        options={tokenOMDOptions.map((token) => ({ value: token, label: token }))}
+                        {...register('token', { onChange: (e) => setCurrency(e.target.value) })}
+                        errors={errors.token?.message}
+                    />
+                )}
+
+                {pool === "omdb" && (
+                    //    token
+                    <Select label={t('coupons.labels.token')}
+                        className="w-full"
+                        value={token}
+                        options={tokenOMDBOptions.map((token) => ({ value: token, label: token }))}
                         {...register('token', { onChange: (e) => setCurrency(e.target.value) })}
                         errors={errors.token?.message}
                     />

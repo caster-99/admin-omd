@@ -86,8 +86,9 @@ export const useCoupons = () => {
       console.log(coupon);
       const response = await api.post(`/coupons`, coupon);
       if (response.data.success) {
-        console.log(response.data);
+       // console.log(response.data);
         setCoupons((prev) => [response.data.data, ...prev]);
+        setSpecialCoupons((prev) => [response.data.data, ...prev]);
         return response;
 
       }
