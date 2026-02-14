@@ -65,7 +65,7 @@ type CreateCouponInputs = yup.InferType<typeof schema>;
 
 export const CouponForm = ({ coupon, onClose, onSuccess }: CouponFormProps) => {
     const { t } = useTranslation();
-    const { createCoupon, updateCoupon, error } = useCoupons();
+    const { createCoupon, updateCoupon } = useCoupons();
     const isEditing = !!coupon;
 
     const [code, setCode] = useState('');

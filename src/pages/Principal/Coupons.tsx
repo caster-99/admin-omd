@@ -158,25 +158,25 @@ export const Coupons = () => {
 
     }
 
-    const cleanFilters = (obj: Record<string, any>) =>
-        Object.fromEntries(
-            Object.entries(obj).filter(([, v]) => v !== "" && v !== undefined && v !== null)
-        );
+    // const cleanFilters = (obj: Record<string, any>) =>
+    //     Object.fromEntries(
+    //         Object.entries(obj).filter(([, v]) => v !== "" && v !== undefined && v !== null)
+    //     );
 
-    const handleApplyFilters = () => {
-        const filters = cleanFilters({
-            code: code.trim(),
-            is_redeemed,
-            redeemed_by,
-            assigned_to,
-            returnable,
-            pool,
-            token: token.trim(),
-        });
+    // const handleApplyFilters = () => {
+    //     const filters = cleanFilters({
+    //         code: code.trim(),
+    //         is_redeemed,
+    //         redeemed_by,
+    //         assigned_to,
+    //         returnable,
+    //         pool,
+    //         token: token.trim(),
+    //     });
 
-        setCurrentPage(1);
-        setAppliedFilters(filters);
-    };
+    //     setCurrentPage(1);
+    //     setAppliedFilters(filters);
+    // };
 
     const handleReset = () => {
         setCurrentPage(1);
