@@ -5,6 +5,7 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import { Users } from '@/pages/Principal/Users'
 import { RolesAndPermissions } from './pages/Principal/RolesAndPermissions'
 import { Coupons } from './pages/Principal/Coupons'
+import { PoolClosures } from './pages/Principal/PoolClosures'
 
 function App() {
   return (
@@ -26,6 +27,10 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/coupons" element={<Coupons />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard/poolOMDB/closures" element={<PoolClosures />} />
       </Route>
 
       {/* Catch all */}

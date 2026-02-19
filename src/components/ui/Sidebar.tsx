@@ -47,7 +47,10 @@ export const Sidebar = ({
             title: 'sidebar.poolOMDB',
             icon: <Database className="text-green-500" />,
             path: '/poolOMDB',
-            children: []
+            children: [
+
+                { title: 'sidebar.poolClosure', path: '/dashboard/poolOMDB/closures' },
+            ]
         },
         {
             title: 'sidebar.omd3',
