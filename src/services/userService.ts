@@ -9,7 +9,6 @@ export interface User {
 
 // Simple in-memory cache
 const userCache = new Map<string, Promise<User>>();
-const REQUEST_DELAY = 50; // ms
 
 export const UserService = {
   getUserById: async (id: string): Promise<User> => {
@@ -19,9 +18,6 @@ export const UserService = {
     }
 
     const promise = (async () => {
-        // Add slight delay to distribute requests
-        await new Promise(resolve => setTimeout(resolve, Math.random() * REQUEST_DELAY));
-        
         try {
             const response = await api.get<any>(`/users/${id}`);
             const userData = response.data.data || response.data;

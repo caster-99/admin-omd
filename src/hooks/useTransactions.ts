@@ -16,15 +16,15 @@ const formatCurrency = (amount: any) => {
 }
 
 // Helper to batch promises
-const batchPromises = async <T>(items: any[], batchSize: number, fn: (item: any) => Promise<T>): Promise<T[]> => {
-    const results: T[] = [];
-    for (let i = 0; i < items.length; i += batchSize) {
-        const batch = items.slice(i, i + batchSize);
-        const batchResults = await Promise.all(batch.map(fn));
-        results.push(...batchResults);
-    }
-    return results;
-};
+// const batchPromises = async <T>(items: any[], batchSize: number, fn: (item: any) => Promise<T>): Promise<T[]> => {
+//    const results: T[] = [];
+//    for (let i = 0; i < items.length; i += batchSize) {
+//        const batch = items.slice(i, i + batchSize);
+//        const batchResults = await Promise.all(batch.map(fn));
+//        results.push(...batchResults);
+//    }
+//    return results;
+// };
 
 export const useTransactions = (initialPoolId?: string) => {
     const [data, setData] = useState<Transaction[]>([]);
@@ -75,29 +75,12 @@ export const useTransactions = (initialPoolId?: string) => {
             const responseData = response.data;
             const transactionsList = responseData.data || responseData || [];
 
-            // Process transactions in batches of 5 to avoid 429s (even with caching)
-            const processTransaction = async (item: any) => {
-                 let userDetails = item.user;
-                 // Try all possible fields for user ID
-                const userId = item.user_id || item.userId || item.owner_id || item.client_id || item.account_id;
-
-                 if ((!userDetails || !userDetails.name) && userId && userId !== 'N/A') {
-                    try {
-                         if (Number(userId) > 0 || (typeof userId === 'string' && userId.length > 0)) {
-                             const fetchedUser = await UserService.getUserById(userId);
-                             userDetails = fetchedUser || { id: userId, name: 'Unknown' };
-                         }
-                    } catch (e) {
-                         console.warn('Failed to fetch user', userId);
-                         userDetails = { id: userId, name: 'Error' };
-                    }
-                } else if (!userDetails) {
-                    userDetails = { name: 'N/A' };
-                }
-
-                // Format amount/fee
+            // Initial immediate display - Mapeo rápido síncrono
+            const initialData = transactionsList.map((item: any) => {
                 const amount = formatCurrency(item.amount);
                 const fee = formatCurrency(item.fee);
+                // Try all possible fields for user ID
+                const userId = item.user_id || item.userId || item.owner_id || item.client_id || item.account_id;
 
                 return {
                     id: item.id || item.transaction_id,
@@ -112,22 +95,19 @@ export const useTransactions = (initialPoolId?: string) => {
                     date: formatDate(item.created_at || item.createdAt || item.date).toISOString(),
                     userId: userId,
                     poolId: item.pool_id || item.poolId,
-                    user: userDetails
+                    user: item.user || { name: 'Cargando...' } // Placeholder
                 };
-            };
-            
-            const mappedData = await batchPromises(transactionsList, 5, processTransaction);
+            });
+
+            setData(initialData);
 
             // Pagination Logic
             const total = Number(responseData.total) || 0;
             const currentLimit = Number(responseData.limit) || limit;
             const calculatedTotalPages = currentLimit > 0 ? Math.ceil(total / currentLimit) : 0;
-            
-            // If API doesn't return total, assume next page exists if we got full page
             const hasNextPage = transactionsList.length >= limit;
             const reliableTotalPages = total > 0 ? (responseData.totalPages || calculatedTotalPages) : 0;
 
-            setData(mappedData);
             setPagination({
                 page: Number(responseData.page) || page,
                 limit: currentLimit,
@@ -135,6 +115,47 @@ export const useTransactions = (initialPoolId?: string) => {
                 totalPages: reliableTotalPages,
                 hasNextPage
             });
+
+            setLoading(false); // UI Ready immediately
+
+            // Background enrichment
+            // We use a copy to mutate and update state
+            let currentData = [...initialData];
+
+            const processBatch = async (items: any[]) => {
+                const updates = await Promise.all(items.map(async (item) => {
+                    let userDetails = item.user;
+                    // If user is not fully loaded
+                    if ((!userDetails || userDetails.name === 'Cargando...') && item.userId && item.userId !== 'N/A') {
+                        try {
+                            const fetchedUser = await UserService.getUserById(item.userId);
+                            userDetails = fetchedUser || { id: item.userId, name: 'Unknown' };
+                        } catch (e) {
+                            userDetails = { id: item.userId, name: 'Error' };
+                        }
+                    }
+                    return { ...item, user: userDetails };
+                }));
+
+                // Update data with new details
+                // Find items in currentData and update them
+                updates.forEach(updatedItem => {
+                    const idx = currentData.findIndex(d => d.id === updatedItem.id);
+                    if (idx !== -1) currentData[idx] = updatedItem;
+                });
+                
+                setData([...currentData]);
+            };
+
+            // Process in background batches of 5
+            (async () => {
+                for (let i = 0; i < currentData.length; i += 5) {
+                    const batch = currentData.slice(i, i + 5);
+                    await processBatch(batch);
+                    // Small delay between UI updates to not freeze browser if many items
+                    await new Promise(r => setTimeout(r, 50)); 
+                }
+            })();
 
         } catch (err: any) {
             console.error('Error fetching transactions:', err);
