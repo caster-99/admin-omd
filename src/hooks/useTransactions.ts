@@ -126,12 +126,17 @@ export const useTransactions = (initialPoolId?: string) => {
 
             const mappedData = await Promise.all(mappedDataPromises);
 
+            const total = responseData.total || 0;
+            const currentLimit = responseData.limit || limit;
+            const calculatedTotalPages = currentLimit > 0 ? Math.ceil(total / currentLimit) : 0;
+            const totalPages = responseData.totalPages || calculatedTotalPages;
+
             setData(mappedData);
             setPagination({
-                page: responseData.page || page,
-                limit: responseData.limit || limit,
-                total: responseData.total || 0,
-                totalPages: responseData.totalPages || 0
+                page: Number(responseData.page) || page,
+                limit: Number(currentLimit) || limit,
+                total: Number(total),
+                totalPages: Number(totalPages)
             });
 
         } catch (err: any) {

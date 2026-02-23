@@ -93,12 +93,12 @@ export const Transactions = () => {
 
     // Handle pagination from backend
     const paginationInfo = {
-        total: pagination.total,
-        totalPages: pagination.totalPages,
-        page: pagination.page,
-        limit: pagination.limit,
-        hasNext: pagination.page < pagination.totalPages,
-        hasPrev: pagination.page > 1
+        total: Number(pagination.total),
+        totalPages: Number(pagination.totalPages),
+        page: Number(pagination.page),
+        limit: Number(pagination.limit),
+        hasNext: Number(pagination.page) < Number(pagination.totalPages),
+        hasPrev: Number(pagination.page) > 1
     };
 
     const statusVariant = (status: string): 'success' | 'warning' | 'destructive' | 'info' => {
