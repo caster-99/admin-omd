@@ -123,6 +123,7 @@
     "investmentMode": "Investment Mode",
     "omd3": "OMD3",
     "poolClosure": "Pool Closure",
+    "workers": "Workers",
     "staking": "Staking",
     "omdWallet": "OMD Wallet",
     "airdrops": "Airdrops",
@@ -295,6 +296,41 @@
       "creator": "Creator",
       "pool": "Pool",
       "token": "Currency"
+    }
+  },
+  "workers": {
+    "title": "Workers Control Panel",
+    "searchPlaceholder": "Search workers...",
+    "masterControl": {
+      "title": "Master Control",
+      "description": "Global override for all workers",
+      "systemStatus": "System Status",
+      "active": "ALL SYSTEMS ACTIVE",
+      "inactive": "SYSTEMS PARTIALLY ACTIVE",
+      "turnAllOn": "Turn All ON",
+      "turnAllOff": "Turn All OFF"
+    },
+    "stats": {
+      "activeWorkers": "Active Workers",
+      "inactiveWorkers": "Inactive / Stopped",
+      "capacityRunning": "of total capacity running",
+      "currentlyOffline": "currently offline"
+    },
+    "detailedStatus": "Detailed Worker Status",
+    "table": {
+      "name": "WORKER NAME",
+      "description": "DESCRIPTION",
+      "status": "STATUS",
+      "control": "CONTROL"
+    },
+    "status": {
+      "active": "Active",
+      "stopped": "Stopped"
+    },
+    "chart": {
+      "title": "System Load (Last 24h)",
+      "cpu": "CPU",
+      "memory": "Memory"
     }
   }
 }

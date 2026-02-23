@@ -134,6 +134,7 @@
     "investmentMode": "Modo de Inversión",
     "omd3": "OMD3",
     "poolClosure": "Cierre de Pool",
+    "workers": "Workers",
     "staking": "Staking",
     "omdWallet": "OMD Wallet",
     "airdrops": "Airdrops",
@@ -302,6 +303,41 @@
       "creator": "Creador",
       "pool": "Pool",
       "token": "Moneda"
+    }
+  },
+  "workers": {
+    "title": "Panel de Control de Workers",
+    "searchPlaceholder": "Buscar workers...",
+    "masterControl": {
+      "title": "Control Maestro",
+      "description": "Anulación global para todos los workers",
+      "systemStatus": "Estado del Sistema",
+      "active": "TODOS LOS SISTEMAS ACTIVOS",
+      "inactive": "SISTEMAS PARCIALMENTE ACTIVOS",
+      "turnAllOn": "Activar Todos",
+      "turnAllOff": "Desactivar Todos"
+    },
+    "stats": {
+      "activeWorkers": "Workers Activos",
+      "inactiveWorkers": "Inactivos / Detenidos",
+      "capacityRunning": "de capacidad total en ejecución",
+      "currentlyOffline": "actualmente desconectados"
+    },
+    "detailedStatus": "Estado Detallado de Workers",
+    "table": {
+      "name": "NOMBRE DEL WORKER",
+      "description": "DESCRIPCIÓN",
+      "status": "ESTADO",
+      "control": "CONTROL"
+    },
+    "status": {
+      "active": "Activo",
+      "stopped": "Detenido"
+    },
+    "chart": {
+      "title": "Carga del Sistema (Últimas 24h)",
+      "cpu": "CPU",
+      "memory": "Memoria"
     }
   }
 }

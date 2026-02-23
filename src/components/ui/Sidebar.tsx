@@ -50,6 +50,7 @@ export const Sidebar = ({
             children: [
 
                 { title: 'sidebar.poolClosure', path: '/dashboard/poolOMDB/closures' },
+                { title: 'sidebar.workers', path: '/dashboard/poolOMDB/workers' },
             ]
         },
         {
