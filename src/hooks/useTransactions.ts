@@ -77,17 +77,21 @@ export const useTransactions = (initialPoolId?: string) => {
             const responseData = response.data;
             
             // Map backend response (snake_case) to frontend model (camelCase)
-            const mappedDataPromises = (responseData.data || []).map(async (item: any) => {
+            const mappedDataPromises = (responseData.data || []).map(async (item: any, index: number) => {
                 let userDetails = item.user;
                 
                 // Try all possible fields for user ID
                 const userId = item.user_id || item.userId || item.owner_id || item.client_id || item.account_id;
 
                 // Fetch user details if missing and we have an ID
+                // Add staggered delay to avoid hammering API
                 if ((!userDetails || !userDetails.name) && userId && userId !== 'N/A') {
+                    // Delay based on index to spread requests (50ms gap)
+                    await new Promise(r => setTimeout(r, index * 150));
+                    
                     try {
                          if (Number(userId) > 0 || (typeof userId === 'string' && userId.length > 0)) {
-                             const fetchedUser = await UserService.getUserById(userId);
+                             const fetchedUser = (await UserService.getUserById(userId)) as any;
                              if (fetchedUser && fetchedUser.name !== 'N/A') {
                                  userDetails = fetchedUser;
                              } else {
@@ -95,7 +99,7 @@ export const useTransactions = (initialPoolId?: string) => {
                              }
                          }
                     } catch (e) {
-                         console.warn('Failed to fetch user for transaction', item.id, e);
+                         // Silent fail for UI
                          userDetails = { id: userId, name: `ID: ${String(userId).substring(0, 8)}...` };
                     }
                 } else if (!userDetails) {

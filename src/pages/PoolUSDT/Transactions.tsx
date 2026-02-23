@@ -263,14 +263,18 @@ export const Transactions = () => {
                                         <th className="pr-6 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b text-right">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-border">
-                                    {loading ? (
+                                <tbody className={`divide-y divide-border ${loading ? 'opacity-50 pointer-events-none transition-opacity duration-200' : ''}`}>
+                                    {transactions.length === 0 && loading ? (
                                         <tr>
-                                            <td colSpan={8} className="text-center py-6 text-slate-500">Cargando...</td>
+                                            <td colSpan={8} className="text-center py-12 text-slate-500 animate-pulse">
+                                                Cargando transacciones...
+                                            </td>
                                         </tr>
                                     ) : transactions.length === 0 ? (
                                         <tr>
-                                            <td colSpan={8} className="text-center py-6 text-slate-500">No se encontraron transacciones</td>
+                                            <td colSpan={8} className="text-center py-12 text-slate-500">
+                                                No se encontraron transacciones
+                                            </td>
                                         </tr>
                                     ) : (
                                         transactions.map((tx) => (
