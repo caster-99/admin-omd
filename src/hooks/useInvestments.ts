@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import api from '@/services/api';
 import type { Investment, InvestmentResponse } from '@/types/investments'; 
 
@@ -20,7 +20,7 @@ export const useInvestments = (initialPoolId?: string) => {
             const { page = 1, limit = 10, search = '', poolId = initialPoolId } = params;
             
             // Map frontend pool ID to backend enum
-            const mapPoolId = (id: string) => {
+            const mapPoolId = (id?: string) => {
                 switch(id?.toUpperCase()) {
                     case 'USDT': return 'POOL_USDT';
                     case 'OMD':
