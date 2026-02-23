@@ -8,6 +8,14 @@ import { Coupons } from './pages/Principal/Coupons'
 import { PoolClosures } from './pages/Principal/PoolClosures'
 import { Workers } from '@/pages/Principal/Workers'
 import { Transactions as PoolUSDTTransactions } from '@/pages/PoolUSDT/Transactions'
+import { Investments as PoolUSDTInvestments } from '@/pages/PoolUSDT/Investments'
+import { Investments as PoolOMDBInvestments } from '@/pages/PoolOMDB/Investments'
+import { Transactions as PoolOMDBTransactions } from '@/pages/PoolOMDB/Transactions'
+import { Investments as OMD3Investments } from '@/pages/OMD3/Investments'
+import { Transactions as OMD3Transactions } from '@/pages/OMD3/Transactions'
+import { PoolClosures as OMD3Closures } from '@/pages/OMD3/PoolClosures'
+import { Workers as PoolUSDTWorkers } from '@/pages/PoolUSDT/Workers'
+import { Workers as OMD3Workers } from '@/pages/OMD3/Workers'
 
 function App() {
   return (
@@ -40,7 +48,39 @@ function App() {
       </Route>
 
       <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard/poolOMDB/investments" element={<PoolOMDBInvestments />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard/poolOMDB/transactions" element={<PoolOMDBTransactions />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/poolUSDT/transactions" element={<PoolUSDTTransactions />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard/poolUSDT/investments" element={<PoolUSDTInvestments />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard/poolUSDT/workers" element={<PoolUSDTWorkers />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard/omd3/investments" element={<OMD3Investments />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+         <Route path="/dashboard/omd3/transactions" element={<OMD3Transactions />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+         <Route path="/dashboard/omd3/closures" element={<OMD3Closures />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+         <Route path="/dashboard/omd3/workers" element={<OMD3Workers />} />
       </Route>
 
       {/* Catch all */}

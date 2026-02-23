@@ -42,13 +42,9 @@ export const Sidebar = ({
             icon: <Database className="text-blue-500" />,
             path: '/poolUSDT',
             children: [
-                { title: 'sidebar.dashboard', path: '/dashboard/poolUSDT' },
-                { title: 'sidebar.users', path: '/dashboard/poolUSDT/users' },
-                { title: 'sidebar.coupons', path: '/dashboard/poolUSDT/coupons' },
                 { title: 'sidebar.investments', path: '/dashboard/poolUSDT/investments' },
                 { title: 'sidebar.transactions', path: '/dashboard/poolUSDT/transactions' },
-                { title: 'sidebar.wallets', path: '/dashboard/poolUSDT/wallets' },
-                { title: 'sidebar.audits', path: '/dashboard/poolUSDT/audits' },
+                { title: 'sidebar.workers', path: '/dashboard/poolUSDT/workers' },
             ]
         },
         {
@@ -56,7 +52,8 @@ export const Sidebar = ({
             icon: <Database className="text-green-500" />,
             path: '/poolOMDB',
             children: [
-
+                { title: 'sidebar.investments', path: '/dashboard/poolOMDB/investments' },
+                { title: 'sidebar.transactions', path: '/dashboard/poolOMDB/transactions' },
                 { title: 'sidebar.poolClosure', path: '/dashboard/poolOMDB/closures' },
                 { title: 'sidebar.workers', path: '/dashboard/poolOMDB/workers' },
             ]
@@ -65,7 +62,12 @@ export const Sidebar = ({
             title: 'sidebar.omd3',
             icon: <Database className="text-purple-500" />,
             path: '/omd3',
-            children: []
+            children: [
+                { title: 'sidebar.investments', path: '/dashboard/omd3/investments' },
+                { title: 'sidebar.transactions', path: '/dashboard/omd3/transactions' },
+                { title: 'sidebar.poolClosure', path: '/dashboard/omd3/closures' },
+                { title: 'sidebar.workers', path: '/dashboard/omd3/workers' },
+            ]
         },
         {
             title: 'sidebar.omdWallet',
