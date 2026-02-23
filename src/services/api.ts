@@ -23,5 +23,22 @@ api.interceptors.request.use(
   }
 );
 
+// Response interceptor to handle auth errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Clear storage to prevent infinite loops if app tries to use old token
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      
+      // Redirect to login if not already there
+      if (!window.location.pathname.includes('/login')) {
+         window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;
