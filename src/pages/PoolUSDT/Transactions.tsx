@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useTransactions } from '@/hooks/useTransactions';
 import { Layout } from '@/components/Layout';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { CardDescription } from "@/components/ui/Card";
@@ -20,30 +21,49 @@ import {
     Filter
 } from "lucide-react";
 
-// --- Mock Data ---
-const MOCK_TRANSACTIONS = Array.from({ length: 45 }, (_, i) => ({
-    id: `#TRX-${9823 - i}`,
-    user: {
-        name: i % 2 === 0 ? 'Ana García' : i % 3 === 0 ? 'Carlos Ruiz' : 'Sofia M.',
-        email: i % 2 === 0 ? 'ana.g@gmail.com' : i % 3 === 0 ? 'carlos.dev@tech.io' : 'sofia.m@design.co',
-        avatar: `https://i.pravatar.cc/150?u=${i}`
-    },
-    amount: (Math.random() * 2000 + 100).toFixed(2),
-    fee: (Math.random() * 50).toFixed(2),
-    net: '0.00', // Calculated below
-    date: '28/11/2023 14:30',
-    status: i % 5 === 0 ? 'Pendiente' : i % 8 === 0 ? 'Fallido' : 'Completado'
-})).map(tx => ({
-    ...tx,
-    net: (parseFloat(tx.amount) - parseFloat(tx.fee)).toFixed(2)
-}));
+// Helper functions (Added for safer formatting)
+const formatCurrency = (value: number | string, currency: string = 'USD') => {
+    const num = Number(value);
+    if (isNaN(num)) return `0.00 ${currency}`;
+    return `${num.toLocaleString('es-ES', { minimumFractionDigits: 2 })} ${currency}`;
+};
+
+const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+        return dateString;
+    }
+};
 
 export const Transactions = () => {
+    // --- Data Fetching ---
+    const { 
+        transactions, 
+        loading, 
+        pagination, 
+        fetchTransactions 
+    } = useTransactions('USDT');
+
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedTx, setSelectedTx] = useState<any>(null);
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const itemsPerPage = 8;
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchTransactions({ 
+                page: currentPage, 
+                limit: itemsPerPage, 
+                search: searchTerm,
+                poolId: 'USDT'
+            });
+        }, 500); // Debounce search
+        return () => clearTimeout(timer);
+    }, [searchTerm, currentPage, fetchTransactions]);
 
     // --- Chart Logic ---
     const incomeData = [40, 55, 45, 65, 58, 75, 70]; // Normalized data points for graph
@@ -71,47 +91,28 @@ export const Transactions = () => {
 
     const { linePath, areaPath } = useMemo(() => generateAreaPath(incomeData), []);
 
-    // Filtering & Pagination
-    const filteredData = MOCK_TRANSACTIONS.filter(tx =>
-        tx.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tx.user.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
+    // Handle pagination from backend
     const paginationInfo = {
-        total: filteredData.length,
-        totalPages,
-        page: currentPage,
-        limit: itemsPerPage,
-        hasNext: currentPage < totalPages,
-        hasPrev: currentPage > 1
+        total: pagination.total,
+        totalPages: pagination.totalPages,
+        page: pagination.page,
+        limit: pagination.limit,
+        hasNext: pagination.page < pagination.totalPages,
+        hasPrev: pagination.page > 1
     };
 
     const statusVariant = (status: string): 'success' | 'warning' | 'destructive' | 'info' => {
-        switch (status) {
-            case 'Completado': return 'success';
-            case 'Pendiente': return 'warning';
-            case 'Fallido': return 'destructive';
+        switch (status?.toLowerCase()) {
+            case 'completed':
+            case 'confirmed':
+            case 'completado': return 'success';
+            case 'pending': 
+            case 'pendiente': return 'warning';
+            case 'failed':
+            case 'cancelled':
+            case 'fallido': return 'destructive';
             default: return 'info';
         }
-    };
-
-    const openDetails = (tx: any) => {
-        // En un futuro, aquí se consultaría el backend por el ID
-        setSelectedTx({
-            ...tx,
-            method: tx.id.includes('2') ? 'Cupón' : 'Depósito Directo',
-            actualBalance: tx.amount,
-            interestRate: '8.00%',
-            totalEarned: '$0.00',
-            lastPayment: '$0.00',
-            withReturn: 'Sí',
-            startDate: tx.date,
-            endDate: '03/02/2027 22:01'
-        });
-        setIsDetailsOpen(true);
     };
 
     return (
@@ -257,45 +258,69 @@ export const Transactions = () => {
                                         <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b text-right">Monto</th>
                                         <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b text-right">Tarifa</th>
                                         <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b text-right">Neto</th>
-                                        <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b">Estado</th>
                                         <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b">Fecha</th>
+                                        <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b text-center">Estado</th>
                                         <th className="pr-6 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b text-right">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border">
-                                    {paginatedData.map((tx) => (
+                                    {loading ? (
+                                        <tr>
+                                            <td colSpan={8} className="text-center py-6 text-slate-500">Cargando...</td>
+                                        </tr>
+                                    ) : transactions.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={8} className="text-center py-6 text-slate-500">No se encontraron transacciones</td>
+                                        </tr>
+                                    ) : (
+                                        transactions.map((tx) => (
                                         <tr key={tx.id} className="hover:bg-muted/20 transition-colors group">
-                                            <td className="px-4 py-3 text-xs font-medium">{tx.id}</td>
+                                            <td className="px-4 py-3 text-xs font-medium" title={tx.id}>
+                                                {tx.id.substring(0, 8)}...
+                                            </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-8 w-8 rounded-full overflow-hidden bg-muted">
-                                                        <img src={tx.user.avatar} alt="" className="w-full h-full object-cover" />
+                                                    <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">
+                                                        {tx.user?.name?.charAt(0) || '?'}
                                                     </div>
                                                     <div>
-                                                        <div className="text-xs font-semibold text-slate-700">{tx.user.name}</div>
-                                                        <div className="text-[10px] text-muted-foreground">{tx.user.email}</div>
+                                                        <div className="text-xs font-semibold text-slate-700">{tx.user?.name || 'Desconocido'}</div>
+                                                        <div className="text-[10px] text-muted-foreground">{tx.user?.email || 'N/A'}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 text-xs font-bold text-right text-slate-900">${tx.amount}</td>
-                                            <td className="px-4 py-3 text-xs text-muted-foreground text-right font-medium">${tx.fee}</td>
-                                            <td className="px-4 py-3 text-xs font-bold text-right text-slate-900">${tx.net}</td>
-                                            <td className="px-4 py-3">
-                                                <Chip label={tx.status} variant={statusVariant(tx.status)} />
+                                            <td className="px-4 py-3 text-xs font-bold text-right text-slate-900">
+                                                {formatCurrency(tx.amount || '0', tx.currency)}
+                                            </td>
+                                            <td className="px-4 py-3 text-xs text-muted-foreground text-right font-medium">
+                                                {formatCurrency(tx.fee || '0', tx.currency)}
+                                            </td>
+                                            <td className="px-4 py-3 text-xs font-bold text-right text-emerald-600">
+                                                {formatCurrency(tx.net || '0', tx.currency)}
                                             </td>
                                             <td className="px-4 py-3 text-[11px] text-muted-foreground font-medium">
-                                                {tx.date}
+                                                {formatDate(tx.date)}
+                                            </td>
+                                            <td className="px-4 py-3 text-center">
+                                                <Chip 
+                                                    label={tx.status} 
+                                                    variant={statusVariant(tx.status)} 
+                                                    className="uppercase tracking-wider text-[10px]"
+                                                />
                                             </td>
                                             <td className="pr-6 py-3 text-right">
                                                 <button
-                                                    onClick={() => openDetails(tx)}
-                                                    className="text-[10px] font-bold text-primary hover:underline"
+                                                    onClick={() => {
+                                                        setSelectedTx(tx);
+                                                        setIsDetailsOpen(true);
+                                                    }}
+                                                    className="p-1 text-slate-400 hover:text-orange-500 transition-colors"
                                                 >
-                                                    Ver detalles
+                                                    <Plus className="h-4 w-4 rotate-45" />
                                                 </button>
                                             </td>
                                         </tr>
-                                    ))}
+                                    )))}
                                 </tbody>
                             </table>
                         </div>
@@ -360,27 +385,31 @@ export const Transactions = () => {
             >
                 {selectedTx && (
                     <div className="flex flex-col">
-                        {/* Custom Header to match the reference look, but in Light Mode */}
                         <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
-                            <h3 className="text-base font-semibold text-slate-800">Detalles de Inversión</h3>
+                            <h3 className="text-base font-semibold text-slate-800">Detalles de Transacción</h3>
                         </div>
 
                         <div className="p-8 grid grid-cols-2 gap-y-8 gap-x-12">
                             <DetailItem label="ID" value={selectedTx.id} />
-                            <DetailItem label="Usuario" value={selectedTx.user.name} />
-                            <DetailItem label="Método" value={selectedTx.method} />
-                            <DetailItem label="Monto" value={`$${selectedTx.amount}`} />
-                            <DetailItem label="Balance Actual" value={`$${selectedTx.actualBalance}`} />
-                            <DetailItem label="Tasa de Interés" value={selectedTx.interestRate} />
-                            <DetailItem label="Total Ganado" value={selectedTx.totalEarned} />
-                            <DetailItem label="Último Pago" value={selectedTx.lastPayment} />
+                            <DetailItem label="Usuario" value={selectedTx.user?.name || 'N/A'} />
+                            <DetailItem label="Tipo" value={selectedTx.type || 'N/A'} />
+                            <DetailItem label="Monto" value={`${formatCurrency(selectedTx.amount, selectedTx.currency)}`} />
+                            <DetailItem label="Tarifa" value={`${formatCurrency(selectedTx.fee, selectedTx.currency)}`} />
+                            <DetailItem label="Neto" value={`${formatCurrency(selectedTx.net, selectedTx.currency)}`} />
+                            
+                            {selectedTx.txHash && (
+                                <div className="col-span-2">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Hash</p>
+                                    <p className="text-xs font-mono text-slate-600 truncate">{selectedTx.txHash}</p>
+                                </div>
+                            )}
+
                             <div>
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Estado</p>
                                 <Chip label={selectedTx.status} variant={statusVariant(selectedTx.status)} />
                             </div>
-                            <DetailItem label="Con Retorno" value={selectedTx.withReturn} />
-                            <DetailItem label="Inicio" value={selectedTx.startDate} />
-                            <DetailItem label="Fin" value={selectedTx.endDate} />
+                            
+                            <DetailItem label="Fecha" value={formatDate(selectedTx.date)} />
                         </div>
                     </div>
                 )}
