@@ -18,8 +18,8 @@ import {
 } from "lucide-react";
 
 // --- Helper Functions ---
-const getIconForType = (type: string) => {
-    switch (type.toLowerCase()) {
+const getIconForType = (type?: string) => {
+    switch (type?.toLowerCase()) {
         case 'cripto':
         case 'ethereum staking':
         case 'bitcoin holding':
