@@ -153,14 +153,33 @@ export const useTransactions = (initialPoolId?: string) => {
             let totalPages = Number(responseData.totalPages);
 
             // Correct handling for unknown total:
-            // If backend provides 0 total but we have data, it means total is unknown.
-            // We shouldn't fake a growing total, but we can indicate if there's *likely* a next page.
-            // Since our Pagination component expects totalPages, we have to pass something or null.
+            // If backend provides 0 total but we have data, we try to fetch from stats
+            // We shouldn't fake a growing total, but we can try to get a better total.
+            // But since filtering might be active, stats total might be too high.
+            // For now, let's keep the user request: "load total pages"
             
-            if (!currentTotal && finalMappedData.length > 0) {
-                 // Unknown total
+            // If totalPages is missing, let's try to get it from statistics endpoint ONLY IF NO SEARCH params are active
+            // Because statistics usually returns global total.
+            if ((!currentTotal || currentTotal === 0) && finalMappedData.length > 0 && !search) {
+                 try {
+                     const statsResponse = await api.get<any>('/transactions/statistics');
+                     // Assuming stats returns { total_transactions: number } or similar
+                     const statsData = statsResponse.data.data || statsResponse.data;
+                     
+                     // Flexible stats parsing (total_transactions, total, count, totalTransactions)
+                     const possibleTotal = Number(statsData.total_transactions) || Number(statsData.totalTransactions) || Number(statsData.total) || Number(statsData.count);
+                     
+                     if (possibleTotal > 0) {
+                         currentTotal = possibleTotal;
+                         totalPages = Math.ceil(currentTotal / currentLimit);
+                     }
+                 } catch (e) {
+                     console.warn('Failed to fetch transaction stats for total count');
+                 }
+            } else if (!currentTotal && finalMappedData.length > 0) {
+                 // Unknown total and maybe search active
                  currentTotal = 0; 
-                 totalPages = 0; // Use 0 to signal "unknown"
+                 totalPages = 0; 
             }
 
             setData(finalMappedData);
