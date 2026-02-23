@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/Button';
-import { Table } from '@/components/ui/Table';
 import { StatCard } from '@/components/ui/poolClosures/StatCard';
 import { usePoolClosures } from '@/hooks/usePoolClosures';
 import {
@@ -17,7 +16,6 @@ export const PoolClosures = () => {
    
     const {
         pendingTransactions,
-        closureHistory,
         coinstorePrice,
         priceLoading,
         totalUSDTPending,

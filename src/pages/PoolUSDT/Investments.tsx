@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Chip } from "@/components/ui/Chip";
 import { Pagination } from "@/components/ui/Pagination";
 import { Dialog } from "@/components/ui/Dialog";
@@ -14,8 +13,7 @@ import {
     Coins,
     Globe,
     Bitcoin,
-    Search,
-    MoreVertical
+    Search
 } from "lucide-react";
 
 // --- Mock Data ---
