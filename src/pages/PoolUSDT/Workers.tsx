@@ -56,31 +56,46 @@ export const Workers = () => {
             const response = await WorkerService.getWorkersByPool('USDT'); 
             
             // Map backend response to frontend interface
-            const mappedWorkers: Worker[] = Array.isArray(response) ? response.map((w: any) => ({
-                id: w.name,
-                name: w.name,
-                description: w.description || 'Worker process',
-                status: w.running ? 'Running' : (w.status === 'stopped' ? 'Stopped' : 'Active'), 
-                lastRun: w.lastRun,
-                nextRun: w.nextRun,
-                cronTime: w.cronTime
-            })) : [];
+            // Backend might return snake_case properties from DB (job_name, is_enabled, etc.)
+            const mappedWorkers: Worker[] = Array.isArray(response) ? response.map((w: any) => {
+                const isActive = w.is_active || w.is_enabled || w.running || false;
+                const status = isActive ? 'Active' : 'Stopped';
+
+                return {
+                    id: w.id || w.job_name || w.name,
+                    name: w.job_name || w.name || 'Unknown Worker',
+                    description: w.description || 'Worker process',
+                    status: (w.last_status === 'RUNNING' || w.status === 'running') ? 'Running' : status, 
+                    lastRun: w.last_run_at || w.lastRun || w.lastExecution,
+                    nextRun: w.next_run_at || w.nextRun || w.nextExecution,
+                    cronTime: w.schedule || w.cronTime || w.cronExpression
+                };
+            }) : [];
 
              if (mappedWorkers.length === 0) {
                  try {
                      const allWorkers: any = await WorkerService.getAllWorkers();
-                     const usdtWorkers = Array.isArray(allWorkers) ? allWorkers.filter((w: any) => w.name?.toUpperCase().includes('USDT')) : [];
+                     // Filter for USDT related names (case insensitive)
+                     const usdtWorkers = Array.isArray(allWorkers) ? allWorkers.filter((w: any) => {
+                         const name = w.job_name || w.name || '';
+                         return name.toUpperCase().includes('USDT');
+                     }) : [];
                      
                      if (usdtWorkers.length > 0) {
-                         setWorkers(usdtWorkers.map((w: any) => ({
-                            id: w.name,
-                            name: w.name,
-                            description: w.description || 'Worker process',
-                            status: w.running ? 'Running' : 'Active',
-                            lastRun: w.lastExecution,
-                            nextRun: w.nextExecution,
-                            cronTime: w.cronTime
-                         })));
+                         setWorkers(usdtWorkers.map((w: any) => {
+                            const isActive = w.is_active || w.is_enabled || w.running || false;
+                            const status = isActive ? 'Active' : 'Stopped';
+                            
+                            return {
+                                id: w.id || w.job_name || w.name,
+                                name: w.job_name || w.name,
+                                description: w.description || 'Worker process',
+                                status: (w.last_status === 'RUNNING' || w.status === 'running') ? 'Running' : status,
+                                lastRun: w.last_run_at || w.lastRun || w.lastExecution,
+                                nextRun: w.next_run_at || w.nextRun || w.nextExecution,
+                                cronTime: w.schedule || w.cronTime || w.cronExpression
+                            };
+                         }));
                      } else {
                          setWorkers([]);
                      }
