@@ -1,61 +1,80 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTransactions } from '@/hooks/useTransactions';
 import { Layout } from '@/components/Layout';
 import { Button } from "@/components/ui/Button";
 import { Pagination } from "@/components/ui/Pagination";
+import { Chip } from "@/components/ui/Chip";
 import {
     Download,
     Filter,
     Search
 } from "lucide-react";
 
-// --- Mock Data ---
-const MOCK_TRANSACTIONS = Array.from({ length: 45 }, (_, i) => ({
-    id: `#TRX-OMDB-${9823 - i}`,
-    user: {
-        name: i % 2 === 0 ? 'Ana García' : i % 3 === 0 ? 'Carlos Ruiz' : 'Sofia M.',
-        email: i % 2 === 0 ? 'ana.g@gmail.com' : i % 3 === 0 ? 'carlos.dev@tech.io' : 'sofia.m@design.co',
-        avatar: `https://i.pravatar.cc/150?u=${i}`
-    },
-    amount: (Math.random() * 2000 + 100).toFixed(2),
-    fee: (Math.random() * 50).toFixed(2),
-    net: '0.00', // Calculated below
-    date: '28/11/2023 14:30',
-    status: i % 5 === 0 ? 'Pendiente' : i % 8 === 0 ? 'Fallido' : 'Completado'
-})).map(tx => ({
-    ...tx,
-    net: (parseFloat(tx.amount) - parseFloat(tx.fee)).toFixed(2)
-}));
+// --- Helper Functions ---
+const formatCurrency = (value: number | string, currency: string = 'USD') => {
+    const num = Number(value);
+    if (isNaN(num)) return `0.00 ${currency}`;
+    return `${num.toLocaleString('es-ES', { minimumFractionDigits: 2 })} ${currency}`;
+};
+
+const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+        return dateString;
+    }
+};
 
 export const Transactions = () => {
+    // --- Data Fetching ---
+    const { 
+        transactions, 
+        loading, 
+        pagination, 
+        fetchTransactions 
+    } = useTransactions('OMDB');
+
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const itemsPerPage = 8;
 
-    // Filtering & Pagination
-    const filteredData = MOCK_TRANSACTIONS.filter(tx =>
-        tx.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tx.user.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchTransactions({ 
+                page: currentPage, 
+                limit: itemsPerPage, 
+                search: searchTerm,
+                poolId: 'OMDB'
+            });
+        }, 500); // Debounce search
+        return () => clearTimeout(timer);
+    }, [searchTerm, currentPage, fetchTransactions]);
 
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
+    // Handle pagination from backend
     const paginationInfo = {
-        total: filteredData.length,
-        totalPages,
-        page: currentPage,
-        limit: itemsPerPage,
-        hasNext: currentPage < totalPages,
-        hasPrev: currentPage > 1
+        total: Number(pagination.total),
+        totalPages: Number(pagination.totalPages),
+        page: Number(pagination.page),
+        limit: Number(pagination.limit),
+        // Use hasNextPage from hook if available, otherwise check against totalPages if > 0
+        hasNext: (pagination as any).hasNextPage ?? (Number(pagination.totalPages) > 0 && Number(pagination.page) < Number(pagination.totalPages)),
+        hasPrev: Number(pagination.page) > 1
     };
 
-    const statusVariant = (status: string) => {
-        switch (status) {
-            case 'Completado': return 'text-emerald-500 bg-emerald-50';
-            case 'Pendiente': return 'text-amber-500 bg-amber-50';
-            case 'Fallido': return 'text-red-500 bg-red-50';
-            default: return 'text-slate-500 bg-slate-50';
+    const statusVariant = (status: string): 'success' | 'warning' | 'destructive' | 'info' => {
+        switch (status?.toLowerCase()) {
+            case 'completed':
+            case 'confirmed':
+            case 'completado': return 'success';
+            case 'pending': 
+            case 'pendiente': return 'warning';
+            case 'failed':
+            case 'cancelled':
+            case 'fallido': return 'destructive';
+            default: return 'info';
         }
     };
 
@@ -101,44 +120,72 @@ export const Transactions = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-white">
-                                    <th className="px-4 py-3 text-[10px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">ID Transacción</th>
-                                    <th className="px-4 py-3 text-[10px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">Usuario</th>
-                                    <th className="px-4 py-3 text-[10px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">Fecha</th>
-                                    <th className="px-4 py-3 text-[10px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">Monto</th>
-                                    <th className="px-4 py-3 text-[10px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">Fee</th>
-                                    <th className="px-4 py-3 text-[10px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">Neto</th>
-                                    <th className="px-4 py-3 text-[10px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100 text-center">Estado</th> 
+                                <tr className="bg-muted/30">
+                                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b">ID Transacción</th>
+                                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b">Usuario</th>
+                                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b">Fecha</th>
+                                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b text-right">Monto</th>
+                                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b text-right">Fee</th>
+                                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b text-right">Neto</th>
+                                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b text-center">Estado</th> 
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-50">
-                                {paginatedData.map((tx) => (
-                                    <tr key={tx.id} className="hover:bg-slate-50/50 transition-colors">
-                                        <td className="px-4 py-3 text-[11px] font-medium text-slate-900">{tx.id}</td>
-                                        <td className="px-4 py-3 text-[11px] text-slate-600 font-medium">
-                                            <div className="flex items-center gap-2">
-                                                 
-                                                <span>{tx.user.name}</span>
+                            <tbody className="divide-y divide-border">
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan={7} className="text-center py-6 text-slate-500">Cargando...</td>
+                                    </tr>
+                                ) : transactions.length === 0 ? (
+                                     <tr>
+                                        <td colSpan={7} className="text-center py-6 text-slate-500">No se encontraron transacciones</td>
+                                    </tr>
+                                ) : (
+                                    transactions.map((tx) => (
+                                    <tr key={tx.id} className="hover:bg-muted/20 transition-colors group">
+                                        <td className="px-4 py-3 text-xs font-medium" title={tx.id}>
+                                            {tx.id?.substring(0, 8)}...
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">
+                                                    {tx.user?.name?.charAt(0) || '?'}
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs font-semibold text-slate-700">{tx.user?.name || 'Desconocido'}</div>
+                                                    <div className="text-[10px] text-muted-foreground">{tx.user?.email || 'N/A'}</div>
+                                                </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 text-[11px] text-slate-500 font-medium">{tx.date}</td>
-                                        <td className="px-4 py-3 text-[11px] font-bold text-slate-900">${tx.amount}</td>
-                                        <td className="px-4 py-3 text-[11px] text-red-500 font-medium">-${tx.fee}</td>
-                                        <td className="px-4 py-3 text-[11px] font-bold text-emerald-600">${tx.net}</td>
+                                        <td className="px-4 py-3 text-[11px] text-muted-foreground font-medium">
+                                            {formatDate(tx.date)}
+                                        </td>
+                                        <td className="px-4 py-3 text-xs font-bold text-right text-slate-900">
+                                            {formatCurrency(tx.amount || '0', tx.currency)}
+                                        </td>
+                                        <td className="px-4 py-3 text-xs text-muted-foreground text-right font-medium">
+                                            {formatCurrency(tx.fee || '0', tx.currency)}
+                                        </td>
+                                        <td className="px-4 py-3 text-xs font-bold text-right text-emerald-600">
+                                            {formatCurrency(tx.net || (Number(tx.amount) - Number(tx.fee)), tx.currency)}
+                                        </td>
                                         <td className="px-4 py-3 text-center">
-                                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusVariant(tx.status)}`}>
-                                                {tx.status}
-                                            </span>
+                                            <Chip 
+                                                label={tx.status} 
+                                                variant={statusVariant(tx.status)} 
+                                                className="uppercase tracking-wider text-[10px]"
+                                            />
                                         </td>
                                     </tr>
-                                ))}
+                                )))}
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <div className="flex items-center justify-between mt-2">
-                     <p className="text-sm font-bold text-slate-500">Mostrando {paginatedData.length} de {filteredData.length} transacciones</p>
+                     <p className="text-sm font-bold text-slate-500">
+                        Mostrando {Math.min(Number(pagination.limit) * Number(pagination.page), Number(pagination.total))} de {Number(pagination.total)} transacciones
+                     </p>
                     <Pagination
                         currentPage={currentPage}
                         pagination={paginationInfo}
